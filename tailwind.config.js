@@ -1,0 +1,20 @@
+const defaultTheme = require('tailwindcss/defaultTheme')
+module.exports = {
+  purge: {
+    enabled: process.env.WEBPACK_DEV_SERVER === 'true' && process.argv.join(' ').indexOf('build') !== -1,
+    content: [
+      "./src/**/*.{html,ts}",
+      "./projects/**/*.{html,ts}"
+    ]
+  },
+  darkMode: false, // or 'media' or 'class'
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ['Inter var', ...defaultTheme.fontFamily.sans],
+      },
+    },
+  },
+  variants: {},
+  plugins: [],
+}
