@@ -26,7 +26,7 @@ export class DashboardComponent implements OnInit {
 
   sign:string;
 
-  constructor(public orderService : OrderService) { }
+  constructor(public  orderService : OrderService) { }
 
 
   ngOnInit(): void {
@@ -71,7 +71,30 @@ export class DashboardComponent implements OnInit {
 
   clearFunction(){
 
-    console.log(this.dataForm.value.price.length);
+    // console.log(this.dataForm.value.price.length);
+
+    let price = this.dataForm.value.price;
+    let operator = this.dataForm.value.operator;
+    let number = this.dataForm.value.numbers;
+
+
+    if(price.length > 0){
+
+      price = price.substring(0, price.length - 1);
+      this.dataForm.controls['price'].setValue(price);
+
+    }else if(operator){
+
+      this.dataForm.controls['operator'].setValue('');
+      document.getElementById('displayBox').innerHTML = '';
+
+    }else if(number){
+      
+      number = number.substring(0, number.length - 1);
+      this.dataForm.controls['numbers'].setValue(number);
+
+    }
+
 
     // this.dataForm.controls['price'].setValue('');
     // this.dataForm.controls['numbers'].setValue('');
@@ -87,7 +110,7 @@ export class DashboardComponent implements OnInit {
     switch (this.dataForm.value.operator) {
       case "atae":
 
-      console.log(this.dataForm.value);
+      // console.log(this.dataForm.value);
 
       // data = {
       //   this.dataForm.value.numbers : this.dataForm.value.numbers,
