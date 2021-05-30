@@ -11,7 +11,9 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { DashboardComponent } from './pages/dashboard/dashboard/dashboard.component';
 import { AuthGuard } from './auth/auth.guard';
 import { HeaderComponent } from './common/header/header.component';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { HistoryComponent } from './pages/history/history.component';
+import { HomeComponent } from './pages/home/home.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -19,20 +21,24 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
     LoginComponent,
     RegisterComponent,
     DashboardComponent,
-    HeaderComponent
+    HeaderComponent,
+    HistoryComponent,
+    HomeComponent
   ],
   imports: [
     BrowserModule,
     RouterModule.forRoot([
-      {path: 'dashboard', component: DashboardComponent, canActivate:[AuthGuard]},
+      // {path: 'dashboard', component: DashboardComponent, canActivate:[AuthGuard]},
+      {path: 'dashboard', component: HomeComponent, canActivate:[AuthGuard]},
       {path: 'login', component: LoginComponent},
       {path: '', component: LoginComponent},
       {path: 'register', component: RegisterComponent},
+      {path: 'history', component: HistoryComponent},
     ]),
     AngularFireModule.initializeApp(environment.firebaseConfig),
     FormsModule,
     ReactiveFormsModule,
-    FontAwesomeModule,
+    BrowserAnimationsModule,
   ],
   providers: [LoginService],
   bootstrap: [AppComponent],

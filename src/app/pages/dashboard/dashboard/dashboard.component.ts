@@ -17,11 +17,11 @@ export class DashboardComponent implements OnInit {
   dataForm = new FormGroup({
     am : new FormControl(''),
     pm : new FormControl(''),
-    name: new FormControl(''),
-    date : new FormControl(''),
+    name: new FormControl('', Validators.required),
+    date : new FormControl('', Validators.required),
     numbers : new FormControl('', Validators.required),
-    operator : new FormControl(''),
-    price : new FormControl(''),
+    operator : new FormControl('', Validators.required),
+    price : new FormControl('', Validators.required),
   });
 
   sign:string;
@@ -96,15 +96,12 @@ export class DashboardComponent implements OnInit {
     }
 
 
-    // this.dataForm.controls['price'].setValue('');
-    // this.dataForm.controls['numbers'].setValue('');
-    // this.dataForm.controls['operator'].setValue('');
-    // document.getElementById('displayBox').innerHTML = '';
   }
 
   confirmOrder(){
 
-    // console.log(this.dataForm.value);
+    // console.log(this.dataForm.value, 'ok');
+
     var data:any;
 
     switch (this.dataForm.value.operator) {
@@ -118,13 +115,20 @@ export class DashboardComponent implements OnInit {
 
         this.orderService.postOrder(this.dataForm.value);
 
-        console.log('ok');
+        this.clearForm();
 
         break;
 
       case "apyan":
 
-        console.log(this.dataForm.value.split(''));
+        // console.log([...this.dataForm.value.numbers]);
+
+        this.orderService.apyanPostOrder(this.dataForm.value);
+        this.clearForm();
+
+        break;
+
+      case "":
 
         break;
     
@@ -132,6 +136,13 @@ export class DashboardComponent implements OnInit {
         break;
     }
 
+  }
+
+  clearForm(){
+    this.dataForm.controls['price'].setValue('');
+    this.dataForm.controls['numbers'].setValue('');
+    this.dataForm.controls['operator'].setValue('');
+    document.getElementById('displayBox').innerHTML = '';
   }
 
 }
