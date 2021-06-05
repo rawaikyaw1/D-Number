@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { Router } from '@angular/router';
+import { LoaderService } from 'src/app/services/loader/loader.service';
+
 
 declare var require:any;
 var toastr = require('toastr');
@@ -10,16 +12,18 @@ var toastr = require('toastr');
 })
 export class LoginService {
 
-  constructor(public firebaseAuth : AngularFireAuth ,  public router: Router) { }
+  constructor(public firebaseAuth : AngularFireAuth ,  public router: Router, private loader:LoaderService) { }
 
   async signIn(email:string, password:string){
+
+    this.loader.requestStart();
     await this.firebaseAuth.signInWithEmailAndPassword(email, password)
     .then(res=>{
       // this.isLoggedIn = true;
       localStorage.setItem('user', JSON.stringify(res.user));
 
       this.router.navigate(['dashboard']);
-
+      this.loader.requestEnded();
 
     })
     .catch(e => {

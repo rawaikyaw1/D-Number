@@ -113,7 +113,7 @@ export class DashboardComponent implements OnInit {
       //   this.dataForm.value.numbers : this.dataForm.value.numbers,
       // }
 
-        this.orderService.postOrder(this.dataForm.value);
+        // this.orderService.postOrder(this.dataForm.value);
 
         this.clearForm();
 
@@ -123,7 +123,7 @@ export class DashboardComponent implements OnInit {
 
         // console.log([...this.dataForm.value.numbers]);
 
-        this.orderService.apyanPostOrder(this.dataForm.value);
+        // this.orderService.apyanPostOrder(this.dataForm.value);
         this.clearForm();
 
         break;

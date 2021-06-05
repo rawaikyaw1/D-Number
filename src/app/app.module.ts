@@ -14,6 +14,7 @@ import { HeaderComponent } from './common/header/header.component';
 import { HistoryComponent } from './pages/history/history.component';
 import { HomeComponent } from './pages/home/home.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { LoadingComponent } from './common/loading/loading.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     DashboardComponent,
     HeaderComponent,
     HistoryComponent,
-    HomeComponent
+    HomeComponent,
+    LoadingComponent
   ],
   imports: [
     BrowserModule,

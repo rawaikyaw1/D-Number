@@ -3,6 +3,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { formatDate } from '@angular/common';
 import { OrderService } from 'src/app/services/order.service';
 
+
 declare var require: any;
 var toastr = require('toastr');
 
@@ -34,6 +35,7 @@ export class HomeComponent implements OnInit {
     this.number = ""; this.operator = ""; this.price = ""; this.totalAmount = 0;
     this.date = formatDate(toDay, 'yyyy-MM-dd', 'en-US');
     this.editRowId = false;
+    this.name = '';
 
     // localStorage.setItem("tableRowData", JSON.stringify([]));
     // localStorage.setItem("totalAmount", JSON.stringify(0));
@@ -51,6 +53,17 @@ export class HomeComponent implements OnInit {
     } else {
       this.pm = true;
     }
+
+    var dataDate = this.date+(this.am? '-AM':'-PM');
+    var localDate = localStorage.getItem('dataDate');
+
+    if(dataDate == localDate){
+      console.log('same');
+    }else{
+      this.orderService.backupFunction();
+      localStorage.setItem('dataDate', dataDate);
+    }
+    
 
   }
 
@@ -795,6 +808,41 @@ export class HomeComponent implements OnInit {
       }
 
     }
+
+  }
+
+  async confirmOrder(){
+    
+    let data = {
+      'roles' : this.tableRow,
+      'total' : this.totalAmount,
+      'name' : this.name,
+      'date' : this.date
+    };
+
+
+    let time = {
+      'am' : this.am,
+      'pm' : this.pm
+    };
+
+    await this.orderService.saveOrder(data, time);
+
+    this.calearTableData();
+
+  }
+
+  calearTableData(){
+
+    this.tableRow = [];
+    this.totalAmount = 0;
+
+    localStorage.setItem("tableRowData", JSON.stringify([]));
+    localStorage.setItem("totalAmount", JSON.stringify(0));
+
+    this.name = '';
+
+    this.clearFunction('all');
 
   }
 

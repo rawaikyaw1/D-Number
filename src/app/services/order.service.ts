@@ -1,129 +1,134 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
-declare var require:any;
+import { LoaderService } from 'src/app/services/loader/loader.service';
+
+
+declare var require: any;
 var toastr = require('toastr');
 
 @Injectable({
   providedIn: 'root'
 })
+
 export class OrderService {
 
-  constructor(private firestore: AngularFirestore) { }
+  constructor(private firestore: AngularFirestore, private loader:LoaderService) { }
 
+  async saveOrder(data, time) {
 
-  async postOrder(data) {
+    this.loader.requestStart();
 
-    let totalAmount = 0;
-    await this.firestore
-    .collection("dbnumbers")
-    .doc(data.numbers).ref.get().then(function (doc) {
-      if (doc.exists) {
+    let allNumbers = '';
+    if (data.roles.length) {
 
-        if(isNaN(doc.data()['amount'])){
+      let dbNumbers = this.firestore.collection("dbnumbers");
 
-          totalAmount = parseInt(data.price);
+      await data.roles.forEach(async value => {
+        let numberArr = await value.number.replace(/\s/g, "").split(',');
 
-        }else{
+        // console.log(value.price, 'for whole numbers');
+        numberArr.forEach(async number => {
+          // console.log(number);
 
-          totalAmount = parseInt(doc.data()['amount'])+parseInt(data.price);
+          allNumbers += number+', ';
 
-        }
+          // Start read the amount of number and update.
+          await dbNumbers.doc(number).ref.get()
+            .then((doc) => {
 
-        console.log(totalAmount, doc.data()['amount']);
+              let totalAmount = 0;
+              if (isNaN(doc.data()['amount'])) {
+                totalAmount = Number(value.price);
+              } else {
+                totalAmount = Number(doc.data()['amount']) + Number(value.price);
+              }
+              // console.log(number, totalAmount);
+              this.firestore
+                .collection("dbnumbers")
+                .doc(number)
+                .set({ amount: totalAmount });
 
-      } else {
-        console.log("There is no document!");
-      }
-    }).catch(function (error) {
-      console.log("There was an error getting your document:", error);
+            })
+            .catch((error) => {
+              console.log("Error getting documents: ", error);
+            });
+          // End read the amount of number and update.
+
+        });
+
+      });
+
+      let collection = time.am ? data.date + 'AM' : data.date + 'PM';
+
+      data.allNumbers = allNumbers;
+
+      await this.firestore.collection(collection).add({
+        data
+      })
+      .then((response)=>{
+        
+        this.loader.requestEnded();
+        toastr.success('Successfully saved!', 'Success!');
+      })
+      .catch(e => {
+        console.log(e);
+        this.loader.requestEnded();
+        toastr.error(e, 'Error!');
+      });
+
+    }
+
+  }
+
+  async backupFunction(){
+
+    var data = {};
+    let dbNumbers = this.firestore.collection("dbnumbers");
+    var date = localStorage.getItem('dataDate');
+
+    dbNumbers.ref.get()
+    .then((snap)=>{
+
+      snap.docs.forEach((ele)=>{
+        // console.log(ele.id, ele.data());
+
+        this.firestore
+                .collection("dbnumbers-"+date)
+                .doc(ele.id)
+                .set({ amount: ele.data() });
+
+        this.firestore
+                .collection("dbnumbers")
+                .doc(ele.id)
+                .set({ amount: 0 });
+        
+      });
+      
+    })
+    .catch(e => {
+      console.log(e);
+      this.loader.requestEnded();
+      toastr.error(e, 'Error!');
     });
 
     // console.log(data);
 
-    if(data.am){
-      
-      await this.firestore.collection(data.date+'AM').add({
-        data
-      })
-      .catch(e => {
-        console.log(e);
-      });
-
-    }
-
-    if(data.pm){
-      
-      await this.firestore.collection(data.date+'PM').add({
-        data
-      })
-      .catch(e => {
-        console.log(e);
-      });
-
-    }
-
-    toastr.success('Successfully added.', 'Success!')
-
-
-    return this.firestore
-      .collection("dbnumbers")
-      .doc(data.numbers)
-      .set({ amount: totalAmount });
-
-  }
-
-  async apyanPostOrder(data) {
     
-    let firstNumber = data.numbers;
 
-    let dbnumbers = this.firestore.collection("dbnumbers");
+    // await this.firestore.collection('backUp').add({
+    //   data
+    // })
+    // .then((response)=>{
+      
+    //   this.loader.requestEnded();
+    //   toastr.success('Successfully saved!', 'Success!');
+    // })
+    // .catch(e => {
+    //   console.log(e);
+    //   this.loader.requestEnded();
+    //   toastr.error(e, 'Error!');
+    // });
 
-    let totalAmount = 0;
-
-    //calculate first number
-
-    dbnumbers.doc(firstNumber).ref.get()
-    .then((doc) => {
-      if(isNaN(doc.data()['amount'])){
-        totalAmount = parseInt(data.price);
-      }else{
-        totalAmount = parseInt(doc.data()['amount'])+parseInt(data.price);
-      }
-      // console.log(firstNumber, totalAmount);
-      this.firestore
-      .collection("dbnumbers")
-      .doc(firstNumber)
-      .set({ amount: totalAmount });
-    })
-    .catch((error) => {
-        console.log("Error getting documents: ", error);
-    });
-
-    //calculate second number
-    totalAmount = 0;
-    let numberArr = [...data.numbers];
-
-    let secondNumber = numberArr[1]+numberArr[0];
-
-    dbnumbers.doc(secondNumber).ref.get()
-    .then((doc) => {
-      if(isNaN(doc.data()['amount'])){
-        totalAmount = parseInt(data.price);
-      }else{
-        totalAmount = parseInt(doc.data()['amount'])+parseInt(data.price);
-      }
-      this.firestore
-      .collection("dbnumbers")
-      .doc(secondNumber)
-      .set({ amount: totalAmount });
-    })
-    .catch((error) => {
-        console.log("Error getting documents: ", error);
-    });
-
-    
-    toastr.success('Successfully added.', 'Success!')
-    return true;
 
   }
 
