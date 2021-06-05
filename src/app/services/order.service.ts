@@ -111,25 +111,6 @@ export class OrderService {
       toastr.error(e, 'Error!');
     });
 
-    // console.log(data);
-
-    
-
-    // await this.firestore.collection('backUp').add({
-    //   data
-    // })
-    // .then((response)=>{
-      
-    //   this.loader.requestEnded();
-    //   toastr.success('Successfully saved!', 'Success!');
-    // })
-    // .catch(e => {
-    //   console.log(e);
-    //   this.loader.requestEnded();
-    //   toastr.error(e, 'Error!');
-    // });
-
-
   }
 
 }
