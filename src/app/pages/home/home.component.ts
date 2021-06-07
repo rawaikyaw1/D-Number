@@ -24,6 +24,7 @@ export class HomeComponent implements OnInit {
   totalAmount: number;
   cloneSign: any;
   editRowId: any;
+  showModalBox:boolean;
 
   tableRow = [];
 
@@ -36,6 +37,7 @@ export class HomeComponent implements OnInit {
     this.date = formatDate(toDay, 'yyyy-MM-dd', 'en-US');
     this.editRowId = false;
     this.name = '';
+    this.showModalBox = false;
 
     // localStorage.setItem("tableRowData", JSON.stringify([]));
     // localStorage.setItem("totalAmount", JSON.stringify(0));
@@ -791,9 +793,14 @@ export class HomeComponent implements OnInit {
 
   }
 
-  async deleteRow(uuid){
+  async deleteRow(){
 
+    let uuid = localStorage.getItem('uuid');
     let objIndex = this.tableRow.findIndex((obj => obj.uuid == uuid));
+
+    console.log(objIndex);
+
+    
 
     if (objIndex > -1) {
 
@@ -808,6 +815,9 @@ export class HomeComponent implements OnInit {
       }
 
     }
+
+    this.showModalBox = false;
+    localStorage.removeItem("uuid");
 
   }
 
@@ -844,6 +854,16 @@ export class HomeComponent implements OnInit {
 
     this.clearFunction('all');
 
+  }
+
+  showModal(uuid){
+
+    localStorage.setItem('uuid', uuid);
+    this.showModalBox = true;
+  }
+
+  hideModal(){
+    this.showModalBox = false;
   }
 
 }

@@ -15,6 +15,7 @@ import { HistoryComponent } from './pages/history/history.component';
 import { HomeComponent } from './pages/home/home.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LoadingComponent } from './common/loading/loading.component';
+import { RecordsComponent } from './pages/records/records.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { LoadingComponent } from './common/loading/loading.component';
     HeaderComponent,
     HistoryComponent,
     HomeComponent,
-    LoadingComponent
+    LoadingComponent,
+    RecordsComponent
   ],
   imports: [
     BrowserModule,
@@ -36,6 +38,7 @@ import { LoadingComponent } from './common/loading/loading.component';
       {path: '', component: LoginComponent},
       {path: 'register', component: RegisterComponent},
       {path: 'history', component: HistoryComponent},
+      {path: 'records', component: RecordsComponent, canActivate:[AuthGuard]},
     ]),
     AngularFireModule.initializeApp(environment.firebaseConfig),
     FormsModule,

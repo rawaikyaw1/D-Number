@@ -37,9 +37,9 @@
           <div class="hidden sm:block sm:ml-6">
             <div class="flex space-x-4">
               <!-- Current: "bg-indigo-900 text-white", Default: "text-gray-300 hover:bg-indigo-700 hover:text-white" -->
-              <a routerLink="/dashboard" [routerLinkActive]="['bg-indigo-700']" class=" text-white px-3 py-2 rounded-md text-sm font-medium" aria-current="page">Dashboard</a>
+              <a routerLink="/dashboard" [routerLinkActive]="['bg-indigo-700']" class=" text-gray-300 hover:bg-indigo-700 px-3 py-2 rounded-md text-sm font-medium" aria-current="page">Dashboard</a>
   
-              <a href="#" class="text-gray-300 hover:bg-indigo-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Team</a>
+              <a routerLink="/records" [routerLinkActive]="['bg-indigo-700']" class="text-gray-300 hover:bg-indigo-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Records</a>
   
               <a href="#" class="text-gray-300 hover:bg-indigo-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Projects</a>
   
@@ -89,7 +89,7 @@
         <!-- Current: "bg-indigo-900 text-white", Default: "text-gray-300 hover:bg-indigo-700 hover:text-white" -->
         <a href="#" class="bg-indigo-900 text-white block px-3 py-2 rounded-md text-base font-medium" aria-current="page">Dashboard</a>
   
-        <a href="#" class="text-gray-300 hover:bg-indigo-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Team</a>
+        <a routerLink="/records" class="text-gray-300 hover:bg-indigo-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Records</a>
   
         <a href="#" class="text-gray-300 hover:bg-indigo-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Projects</a>
   
@@ -97,5 +97,3 @@
       </div>
     </div>
   </nav>
-
-  <app-loading></app-loading>
