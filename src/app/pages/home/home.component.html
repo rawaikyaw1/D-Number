@@ -1,18 +1,12 @@
 <app-header></app-header>
 <div class="grid md:grid-cols-2 gap-4 p-2">
     <div>
-        <h1 class="text-3xl text-center text-indigo-800 mb-6 font-bold">Numbers</h1>
         <div class="grid grid-cols-1  pb-2">
-            <div class="display-content bg-indigo-600 w-full  md:h-20  text-white lg:text-2xl p-5  h-16">
-                {{number}} <div id="operatorbox" class="inline"></div> {{price}}
-
-                <button (click)='clearFunction()' class="float-right">
-                    <svg class="md:w-10 w-7" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd"
-                            d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                            clip-rule="evenodd" />
-                    </svg>
-                </button>
+            <div class="display-content bg-indigo-600 w-full  text-white lg:text-2xl p-5  h-auto justify-between">
+                <div class="overflow-auto">
+                    {{number}} <div id="operatorbox" class="inline"></div> {{price}}
+                </div>
+                
             </div>
         </div>
 
@@ -46,22 +40,6 @@
                 </button>
             </div>
 
-            <div class="col-span-2">
-                <button
-                    class="bg-indigo-700 hover:bg-indigo-800 text-white font-bold w-full h-full p-4 lg:p-5 border-indigo-900 hover:bg-indigo-500 rounded   sm:text-xs "
-                    (click)="operatorFunction('atae', $event)">
-                    <svg class="w-4 inline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-                        id="atae">
-                        <path fill-rule="evenodd"
-                            d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z"
-                            clip-rule="evenodd" />
-                    </svg>
-                    အတည့်
-                </button>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-6 gap-2 py-2 justify-self-center">
             <div class="">
                 <button
                     class="bg-indigo-700 hover:bg-indigo-800 text-white font-bold w-full h-full p-4 lg:p-5 border-indigo-900 hover:bg-indigo-500 rounded h-12 w-12"
@@ -69,6 +47,38 @@
                     5
                 </button>
             </div>
+
+
+            <div class="col-span-1">
+                <button
+                    class="bg-indigo-700 hover:bg-indigo-800 text-white font-bold w-full h-full p-4 lg:p-5 border-indigo-900 hover:bg-indigo-500 rounded   sm:text-xs "
+                    (click)='clearFunction()'>
+                    <svg class="w-5 inline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                            clip-rule="evenodd" />
+                    </svg>
+                   
+                </button>
+            </div>
+
+            <!-- <div class="col-span-1">
+                <button
+                    class="bg-indigo-700 hover:bg-indigo-800 text-white font-bold w-full h-full p-4 lg:p-5 border-indigo-900 hover:bg-indigo-500 rounded   sm:text-xs "
+                    (click)="clearFunction('all')">
+                    AC
+                </button>
+            </div> -->
+            
+
+            
+        </div>
+        
+
+        <div class="grid grid-cols-6 gap-2 py-2 justify-self-center">
+
+            
+            
             <div class="">
                 <button
                     class="bg-indigo-700 hover:bg-indigo-800 text-white font-bold w-full h-full p-4 lg:p-5 border-indigo-900 hover:bg-indigo-500 rounded h-12 w-12"
@@ -91,6 +101,51 @@
                 </button>
             </div>
 
+            <div class="">
+                <button
+                    class="bg-indigo-700 hover:bg-indigo-800 text-white font-bold w-full h-full p-4 lg:p-5 border-indigo-900 hover:bg-indigo-500 rounded h-12 w-12"
+                    (click)='numberFunction("9")'>
+                    9
+                </button>
+            </div>
+            
+            <div class="">
+                <button
+                    class="bg-indigo-700 hover:bg-indigo-800 text-white font-bold w-full h-full p-4 lg:p-5 border-indigo-900 hover:bg-indigo-500 rounded h-12 w-12"
+                    (click)='numberFunction("0")'>
+                    0
+                </button>
+            </div>
+
+            <div class="">
+                <button
+                    class="bg-indigo-700 hover:bg-indigo-800 text-white font-bold w-full h-full p-4 lg:p-5 border-indigo-900 hover:bg-indigo-500 rounded h-12 w-12"
+                    (click)='numberConnect(",")'>
+                    ,
+                </button>
+            </div>
+
+            
+        </div>
+
+        <div class="grid grid-cols-6 gap-2 py-2 justify-self-center">
+
+            
+
+            <div class="col-span-2">
+                <button
+                    class="bg-indigo-700 hover:bg-indigo-800 text-white font-bold w-full h-full p-4 lg:p-5 border-indigo-900 hover:bg-indigo-500 rounded   sm:text-xs "
+                    (click)="operatorFunction('atae', $event)">
+                    <svg class="w-4 inline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                        id="atae">
+                        <path fill-rule="evenodd"
+                            d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    အတည့်
+                </button>
+            </div>
+
             <div class="col-span-2">
                 <button
                     class="bg-indigo-700 hover:bg-indigo-800 text-white font-bold w-full h-full p-4 lg:p-5 border-indigo-900 hover:bg-indigo-500 rounded    "
@@ -103,23 +158,8 @@
                     အပြန်
                 </button>
             </div>
-        </div>
 
-        <div class="grid grid-cols-6 gap-2 py-2 justify-self-center">
-            <div class="">
-                <button
-                    class="bg-indigo-700 hover:bg-indigo-800 text-white font-bold w-full h-full p-4 lg:p-5 border-indigo-900 hover:bg-indigo-500 rounded h-12 w-12"
-                    (click)='numberFunction("9")'>
-                    9
-                </button>
-            </div>
-            <div class="">
-                <button
-                    class="bg-indigo-700 hover:bg-indigo-800 text-white font-bold w-full h-full p-4 lg:p-5 border-indigo-900 hover:bg-indigo-500 rounded h-12 w-12"
-                    (click)='numberFunction("0")'>
-                    0
-                </button>
-            </div>
+            
             <div class="col-span-2">
                 <button
                     class="bg-indigo-700 hover:bg-indigo-800 text-white font-bold w-full h-full p-4 lg:p-5 border-indigo-900 hover:bg-indigo-500 rounded    "
@@ -133,6 +173,56 @@
                     ပတ်လှည့်
                 </button>
             </div>
+            
+
+
+            
+        </div>
+
+        <div class="grid grid-cols-6 gap-2 py-2 justify-self-center">
+
+            <div class="col-span-2">
+                <button
+                    class="bg-indigo-700 hover:bg-indigo-800 text-white font-bold w-full h-full p-4 lg:p-5 border-indigo-900 hover:bg-indigo-500 rounded " (click)="operatorFunction('top', $event)">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 inline" viewBox="0 0 20 20" fill="currentColor" id="top">
+                        <path fill-rule="evenodd"
+                            d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    ထိပ်
+                </button>
+            </div>
+
+            <div class="col-span-2">
+                <button
+                    class="bg-indigo-700 hover:bg-indigo-800 text-white font-bold w-full h-full p-4 lg:p-5 border-indigo-900 hover:bg-indigo-500 rounded " (click)="operatorFunction('last', $event)">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 inline" viewBox="0 0 20 20" fill="currentColor" id="last">
+                        <path fill-rule="evenodd"
+                            d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    ဘိတ်
+                </button>
+            </div>
+
+            
+            <div class="col-span-2">
+                <button
+                    class="bg-indigo-700 hover:bg-indigo-800 text-white font-bold w-full h-full p-4 lg:p-5 border-indigo-900 hover:bg-indigo-500 rounded    "
+                    (click)="operatorFunction('apuu', $event)">
+                    <svg class="w-7 inline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                        id="apuu">
+                        <path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
+                        <path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5h8a2 2 0 00-2-2H5z" />
+                    </svg>
+                    အပူး
+                </button>
+            </div>
+
+            
+        </div>
+
+        <div class="grid grid-cols-6 gap-2 py-2 justify-self-center">
 
             <div class="col-span-2">
                 <button
@@ -147,9 +237,7 @@
                     နက္ခတ်
                 </button>
             </div>
-        </div>
 
-        <div class="grid grid-cols-6 gap-2 py-2 justify-self-center">
             <div class="col-span-2">
                 <button
                     class="bg-indigo-700 hover:bg-indigo-800 text-white font-bold w-full h-full p-4 lg:p-5 border-indigo-900 hover:bg-indigo-500 rounded    "
@@ -161,18 +249,6 @@
                             clip-rule="evenodd" />
                     </svg>
                     ပါဝါ
-                </button>
-            </div>
-            <div class="col-span-2">
-                <button
-                    class="bg-indigo-700 hover:bg-indigo-800 text-white font-bold w-full h-full p-4 lg:p-5 border-indigo-900 hover:bg-indigo-500 rounded    "
-                    (click)="operatorFunction('apuu', $event)">
-                    <svg class="w-7 inline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-                        id="apuu">
-                        <path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
-                        <path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5h8a2 2 0 00-2-2H5z" />
-                    </svg>
-                    အပူး
                 </button>
             </div>
 
@@ -188,6 +264,7 @@
                     အပွင့်
                 </button>
             </div>
+
         </div>
 
         <div class="grid grid-cols-6 gap-2 py-2 justify-self-center">
@@ -203,21 +280,8 @@
                     ညီကို
                 </button>
             </div>
-            <div class="col-span-2">
-                <button
-                    class="bg-indigo-700 hover:bg-indigo-800 text-white font-bold w-full h-full p-4 lg:p-5 border-indigo-900 hover:bg-indigo-500 rounded    "
-                    (click)="operatorFunction('apyan', $event)">
-                    <svg class="w-4 inline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-                        id="apyan">
-                        <path fill-rule="evenodd"
-                            d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z"
-                            clip-rule="evenodd" />
-                    </svg>
-                    အခွေ
-                </button>
-            </div>
 
-            <div class="col-span-2">
+            <div class="col-span-4">
                 <button *ngIf="!editRowId"
                     class="bg-indigo-700 hover:bg-indigo-800 text-white font-bold w-full h-full p-4 lg:p-5 border-indigo-900 hover:bg-indigo-500 rounded    "
                     (click)="confirmFunction()">
@@ -248,7 +312,6 @@
     </div>
 
     <div>
-        <h1 class="text-3xl text-center text-indigo-800 mb-1 font-bold">Total Result</h1>
         <div class="grid grid-cols-5 gap-4 pt-5 mb-5">
             <div class="row-span-full">
 
@@ -331,7 +394,7 @@
 
                     <tr>
                         <td class="bg-gray-100 text-center px-4 py-4" colspan="5" *ngIf="!tableRow.length">
-                            <mat-icon class="mat-icon-rtl-mirror" svgIcon="thumb-up"></mat-icon>
+
                             <strong class="text-red-500">No Record!</strong>
                         </td>
                     </tr>
@@ -371,7 +434,8 @@
 </div>
 
 <!-- Confirm Modal -->
-<div class="fixed top-0 left-0 right-0 bottom-0 w-full h-screen z-50 overflow-hidden bg-gray-700 bg-opacity-40 flex flex-col items-center justify-center" *ngIf="showModalBox">
+<div class="fixed top-0 left-0 right-0 bottom-0 w-full h-screen z-50 overflow-hidden bg-gray-700 bg-opacity-40 flex flex-col items-center justify-center"
+    *ngIf="showModalBox">
     <div class="bg-gray-50 max-w-sm py-2 px-3 rounded shadow-md text-gray-800 w-full  z-10">
         <div class="flex justify-between items-center border-b-2 pb-2">
             <h4 class="text-lg font-bold text-center w-full text-red-600">Are you sure to delete!</h4>
@@ -391,7 +455,8 @@
         </div>
         <div class="mt-3 flex justify-end space-x-3">
             <button class="px-3 py-1 rounded bg-gray-50 hover:bg-gray-200" (click)="hideModal()">Cancel </button>
-            <button class="px-3 py-1 rounded bg-red-500 text-gray-200 hover:bg-red-800" (click)="deleteRow()">Delete</button>
+            <button class="px-3 py-1 rounded bg-red-500 text-gray-200 hover:bg-red-800"
+                (click)="deleteRow()">Delete</button>
         </div>
     </div>
 </div>

@@ -16,6 +16,8 @@ import { HomeComponent } from './pages/home/home.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LoadingComponent } from './common/loading/loading.component';
 import { RecordsComponent } from './pages/records/records.component';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { TableComponent } from './pages/table/table.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +29,8 @@ import { RecordsComponent } from './pages/records/records.component';
     HistoryComponent,
     HomeComponent,
     LoadingComponent,
-    RecordsComponent
+    RecordsComponent,
+    TableComponent
   ],
   imports: [
     BrowserModule,
@@ -36,14 +39,21 @@ import { RecordsComponent } from './pages/records/records.component';
       {path: 'dashboard', component: HomeComponent, canActivate:[AuthGuard]},
       {path: 'login', component: LoginComponent},
       {path: '', component: LoginComponent},
-      {path: 'register', component: RegisterComponent},
-      {path: 'history', component: HistoryComponent},
+      // {path: 'register', component: RegisterComponent},
+      // {path: 'history', component: HistoryComponent},
       {path: 'records', component: RecordsComponent, canActivate:[AuthGuard]},
+      {path: 'table', component: TableComponent, canActivate:[AuthGuard]},
     ]),
     AngularFireModule.initializeApp(environment.firebaseConfig),
     FormsModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: environment.production,
+      // Register the ServiceWorker as soon as the app is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
+    }),
   ],
   providers: [LoginService],
   bootstrap: [AppComponent],

@@ -1,6 +1,6 @@
 {
-  "name": "d-number",
-  "version": "0.0.0",
+  "name": "DNumber",
+  "version": "0.0.1",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -21,7 +21,9 @@
     "@angular/platform-browser": "^11.2.14",
     "@angular/platform-browser-dynamic": "^11.2.14",
     "@angular/router": "^11.2.14",
+    "@angular/service-worker": "^11.2.14",
     "firebase": "^8.6.2",
+    "ngx-device-detector": "^2.1.1",
     "rxjs": "^6.6.7",
     "tailwindcss": "^2.0.4",
     "toastr": "^2.1.4",

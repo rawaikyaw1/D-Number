@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { LoaderService } from 'src/app/services/loader/loader.service';
+import { LoginService } from './login.service';
 
 
 declare var require: any;
 var toastr = require('toastr');
+
 
 @Injectable({
   providedIn: 'root'
@@ -12,55 +14,50 @@ var toastr = require('toastr');
 
 export class OrderService {
 
-  constructor(private firestore: AngularFirestore, private loader:LoaderService) { }
+  constructor(private firestore: AngularFirestore, private loader:LoaderService, private loginService:LoginService) { }
 
   async saveOrder(data, time) {
 
     this.loader.requestStart();
 
-    let allNumbers = '';
+    
     if (data.roles.length) {
 
-      let dbNumbers = this.firestore.collection("dbnumbers");
+      await this.checkTokenMatch(data, time);
 
-      await data.roles.forEach(async value => {
-        let numberArr = await value.number.replace(/\s/g, "").split(',');
+    }else{
 
-        // console.log(value.price, 'for whole numbers');
-        numberArr.forEach(async number => {
-          // console.log(number);
+      this.loader.requestEnded();
+        toastr.error('Data not saved!', 'Error!');
 
-          allNumbers += number+', ';
+    }
 
-          // Start read the amount of number and update.
-          await dbNumbers.doc(number).ref.get()
-            .then((doc) => {
+  }
 
-              let totalAmount = 0;
-              if (isNaN(doc.data()['amount'])) {
-                totalAmount = Number(value.price);
-              } else {
-                totalAmount = Number(doc.data()['amount']) + Number(value.price);
-              }
-              // console.log(number, totalAmount);
-              this.firestore
-                .collection("dbnumbers")
-                .doc(number)
-                .set({ amount: totalAmount });
 
-            })
-            .catch((error) => {
-              console.log("Error getting documents: ", error);
-            });
-          // End read the amount of number and update.
+  async combineData(data, time){
+    var allNumbers = '';
+    var dataObjs = [];
+    
+     await data.roles.forEach(async value => {
+      let numberArr = await value.number.replace(/\s/g, "").split(',');
 
-        });
+      numberArr.forEach(async number => {
+        
+        dataObjs.push({"id":number, "price":Number(value.price)});
+
+        allNumbers += number+', ';
+
 
       });
 
-      let collection = time.am ? data.date + 'AM' : data.date + 'PM';
+    });
+
+    let collection = time.am ? data.date + 'AM' : data.date + 'PM';
 
       data.allNumbers = allNumbers;
+
+      console.log(collection);
 
       await this.firestore.collection(collection).add({
         data
@@ -76,39 +73,57 @@ export class OrderService {
         toastr.error(e, 'Error!');
       });
 
-    }
+    // let sumData = dataObjs.reduce((a, b) => a.set(b.id, (a.get(b.id) || 0) + Number(b.price)), new Map);
+
+    // return sumData;
+    
 
   }
 
-  async backupFunction(){
 
-    var data = {};
-    let dbNumbers = this.firestore.collection("dbnumbers");
-    var date = localStorage.getItem('dataDate');
+  async getRecords(date = null){
 
-    dbNumbers.ref.get()
+    this.loader.requestStart();
+    var objects = [];
+    
+    await this.firestore.collection(date).ref.get()
     .then((snap)=>{
+      snap.forEach(element => {
+        // console.log(typeof element.data()['data']);
+        objects.push(element.data()['data']);
 
-      snap.docs.forEach((ele)=>{
-        // console.log(ele.id, ele.data());
-
-        this.firestore
-                .collection("dbnumbers-"+date)
-                .doc(ele.id)
-                .set({ amount: ele.data() });
-
-        this.firestore
-                .collection("dbnumbers")
-                .doc(ele.id)
-                .set({ amount: 0 });
-        
       });
-      
-    })
-    .catch(e => {
-      console.log(e);
-      this.loader.requestEnded();
-      toastr.error(e, 'Error!');
+
+    });
+
+    this.loader.requestEnded();
+    // console.log(objects);
+    return objects;
+
+  }
+
+  async checkTokenMatch(data, time) {
+
+    let user = JSON.parse(localStorage.getItem('user'));
+    // console.log(user['stsTokenManager'].accessToken);
+    await this.firestore.collection(user.uid).ref.get()
+    .then((res)=>{
+      res.forEach(element => {
+        // console.log(element.data()['collection']['token']);
+
+        if(user['stsTokenManager'].accessToken != element.data()['collection']['token']){
+          this.loginService.logout();
+
+          toastr.error('Session expired!', 'Invalid!');
+          this.loader.requestEnded();
+          
+        }else{
+
+          this.combineData(data, time);
+
+        }
+
+      });
     });
 
   }

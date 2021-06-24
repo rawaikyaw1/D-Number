@@ -1,0 +1,42 @@
+<app-header></app-header>
+<div class="pt-4 px-3 justify-items-center">
+    <h1 class="md:text-3xl text-center text-indigo-800 mb-6 font-bold"> Total Amount : {{totalAmount}} </h1>
+
+</div>
+
+<div class="mb-2 grid gap-4 justify-items-center pl-2">
+
+    <div >
+        <input [checked]="time == 'AM'" type="radio" id="am" class="w-5 h-5" [(ngModel)]="time" value="AM">
+        <label for="am" class="text-xl"> AM</label>
+        <span class="p-2"></span>
+        <input [checked]="time == 'PM'" type="radio" id="pm" class="w-5 h-5" [(ngModel)]="time" value="PM">
+       
+        <label for="pm" class="text-xl"> PM</label>
+        <span class="p-2"></span>
+        <input type="date" class="p-2 text-indigo-700 border-b-2 border-indigo-500 outline-none" [(ngModel)]="recordDate">
+
+        <button (click)="searchRecord()" class=" pt-2 pb-2.5 px-4 bg-indigo-500 hover:bg-indigo-800 text-white">
+            Search
+        </button>
+    </div>
+
+    
+</div>
+<div class=" flex  px-2">
+    <input class="w-full rounded p-2" type="text" placeholder="Search..." [(ngModel)]="search_number">
+    <button (click)="searchNumber()"
+        class="bg-white w-auto flex justify-end items-center text-blue-500 p-2 hover:text-blue-400">
+        <i class="material-icons">search</i>
+    </button>
+</div>
+<div *ngIf="noRecords" class="bg-gray-100 text-center px-4 py-4" colspan="5">
+    <strong class="text-red-500">No Record!</strong>
+</div>
+<div  class="grid grid-flow-col grid-cols-6 grid-rows-15 gap-4 p-2">
+    <div *ngFor="let item of counter(100); let i = index;" class="p-5 bg-gray-100" id="row{{i < 10 ? '0'+i : i}}" [ngClass]="{'hidden' : searchData}">
+        <strong class="text-indigo-900 text-lg">{{i < 10 ? '0'+i : i}} </strong> 
+        <span class="pl-5"> {{recordRows.hasOwnProperty(i < 10 ? '0'+i : i) ? recordRows[i < 10 ? '0'+i : i] : 0}}</span>
+    </div>
+</div>
+

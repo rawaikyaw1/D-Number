@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { formatDate } from '@angular/common';
 import { OrderService } from 'src/app/services/order.service';
+import { element } from 'protractor';
 
 
 declare var require: any;
@@ -24,7 +25,9 @@ export class HomeComponent implements OnInit {
   totalAmount: number;
   cloneSign: any;
   editRowId: any;
-  showModalBox:boolean;
+  showModalBox: boolean;
+  connector: any;
+  longNumber: any;
 
   tableRow = [];
 
@@ -38,6 +41,9 @@ export class HomeComponent implements OnInit {
     this.editRowId = false;
     this.name = '';
     this.showModalBox = false;
+    this.connector = false;
+    this.longNumber = false;
+
 
     // localStorage.setItem("tableRowData", JSON.stringify([]));
     // localStorage.setItem("totalAmount", JSON.stringify(0));
@@ -56,16 +62,8 @@ export class HomeComponent implements OnInit {
       this.pm = true;
     }
 
-    var dataDate = this.date+(this.am? '-AM':'-PM');
-    var localDate = localStorage.getItem('dataDate');
 
-    if(dataDate == localDate){
-      console.log('same');
-    }else{
-      this.orderService.backupFunction();
-      localStorage.setItem('dataDate', dataDate);
-    }
-    
+
 
   }
 
@@ -74,11 +72,21 @@ export class HomeComponent implements OnInit {
     this.date = value.target.value;
   }
 
-  numberFunction(number) {
+  async numberFunction(number) {
 
     if (!this.operator) {
 
       this.number += number;
+
+      var arr = this.number.split(", ");
+      var checkLength = 0;
+      await arr.forEach(element => {
+        checkLength = element.length;
+      });
+
+      if (checkLength > 1) {
+        this.connector = false;
+      }
 
     } else {
 
@@ -87,6 +95,18 @@ export class HomeComponent implements OnInit {
     }
 
     // console.log(this.price, this.number, this.date);
+
+  }
+
+  numberConnect(connector) {
+
+    if (!this.operator && !this.connector && this.number) {
+
+      this.number = this.number + connector + ' ';
+      this.connector = true;
+      this.longNumber = true;
+
+    }
 
   }
 
@@ -110,6 +130,7 @@ export class HomeComponent implements OnInit {
       document.getElementById('operatorbox').innerHTML = '';
 
       this.editRowId = null;
+      this.longNumber = false;
 
     } else {
       if (this.price) {
@@ -132,7 +153,7 @@ export class HomeComponent implements OnInit {
 
   async confirmFunction() {
 
-    let insertData:any;
+    let insertData: any;
 
     switch (this.operator) {
 
@@ -183,9 +204,29 @@ export class HomeComponent implements OnInit {
         insertData = await this.nyikoFunction();
         break;
       // End Nyi Ko condition
+
+      // Start Top condition
+      case 'top':
+        insertData = await this.topFunction();
+        break;
+      //End top condition
+
+      // Start last condition
+      case 'last':
+
+        if (this.longNumber) {
+          toastr.error('Invalid data input.', 'Invalid!');
+          return false;
+        }
+
+        insertData = await this.lastFunction();
+
+        break;
+      // End last condition
+
     }
 
-    if(insertData){
+    if (insertData) {
       this.addToTableData(insertData, insertData['amount']);
     }
 
@@ -195,7 +236,7 @@ export class HomeComponent implements OnInit {
 
     var arr = [...this.number];
 
-    if (!this.price || !this.number || arr.length < 2 || arr.length > 2) {
+    if (!this.price || !this.number || arr.length < 2) {
 
       toastr.error('Invalid data input.', 'Invalid!');
       return false;
@@ -203,13 +244,36 @@ export class HomeComponent implements OnInit {
     }
 
     let uuidAtae = this.getUniqueId(4);
+    let group = [];
+    let price = this.price;
+    let groupNumber = '';
+
+    if (this.longNumber) {
+
+      var numberArr = this.number.split(", ");
+
+      numberArr.forEach(element => {
+
+        groupNumber += element + ', ';
+        group.push({ 'number': element, 'price': price });
+
+      });
+
+    } else {
+
+      groupNumber = this.number + ', ';
+      group.push({ 'number': this.number, 'price': price });
+
+    }
+
+    let ataePrice = group.length * Number(this.price);
 
     let row = {
       'uuid': uuidAtae,
-      'number': this.number,
+      'number': groupNumber.slice(0, -2),
       'operator': this.operator,
       'price': this.price,
-      'amount': this.price,
+      'amount': ataePrice,
       'originNumber': this.number
     };
 
@@ -226,24 +290,53 @@ export class HomeComponent implements OnInit {
     }
 
     let uuidApyan = this.getUniqueId(4);
-
-    var arr = [...this.number];
     let group = [];
     let price = this.price;
     let groupNumber = '';
 
-    for (let check = 0; check < arr.length; check++) {
+    if (this.longNumber) {
 
-      groupNumber = await this.calculationNumber(check, arr, group, price, groupNumber) + ', '.slice(0, -2);
+      var numberArr = this.number.split(", ");
+
+      // console.log(numberArr);
+      numberArr.forEach(element => {
+        // console.log(element[0], element[1]);
+        if (element[1] != element[0]) {
+
+          var number = element[1] + '' + element[0];
+          groupNumber += element + ', ' + element[1] + '' + element[0] + ', ';
+          group.push({ 'number': element, 'price': price }, { 'number': number, 'price': price });
+
+        } else {
+
+          groupNumber += element + ', ';
+          group.push({ 'number': element, 'price': price });
+
+        }
+
+      });
+
+    } else {
+
+      var arr = [...this.number];
+
+
+      for (let check = 0; check < arr.length; check++) {
+
+        groupNumber = await this.calculationNumber(check, arr, group, price, groupNumber) + ', '.slice(0, -2);
+
+      }
+
+      if (group.length == 0) {
+        toastr.error('Invalid numbers input.', 'Invalid!');
+        return false;
+      }
+
+      // console.log(groupNumber);
+
+
 
     }
-
-    if (group.length == 0) {
-      toastr.error('Invalid numbers input.', 'Invalid!');
-      return false;
-    }
-
-    // console.log(groupNumber);
 
     let aPyanPrice = group.length * Number(this.price);
 
@@ -261,6 +354,11 @@ export class HomeComponent implements OnInit {
   }
 
   async patlalFunction() {
+
+    if (this.longNumber) {
+      toastr.error('Invalid data input.', 'Invalid!');
+      return false;
+    }
 
     if (!this.price || !this.number) {
 
@@ -313,7 +411,12 @@ export class HomeComponent implements OnInit {
 
   }
 
-  async netkhatFunction(){
+  async netkhatFunction() {
+
+    if (this.longNumber) {
+      toastr.error('Invalid data input.', 'Invalid!');
+      return false;
+    }
 
     let uuidNetKhat = this.getUniqueId(4);
     let netKhatNumbers = "";
@@ -374,117 +477,134 @@ export class HomeComponent implements OnInit {
 
   }
 
-  async powerFunction(){
+  async powerFunction() {
+
+    if (this.longNumber) {
+      toastr.error('Invalid data input.', 'Invalid!');
+      return false;
+    }
+
     let powerNumbers = "";
-      let uuidPower = this.getUniqueId(4);
-      let powerPrice;
+    let uuidPower = this.getUniqueId(4);
+    let powerPrice;
 
-      if (!this.price) {
+    if (!this.price) {
 
-        toastr.error('Invalid data input.', 'Invalid!');
-        return false;
+      toastr.error('Invalid data input.', 'Invalid!');
+      return false;
 
-      }
+    }
 
-      if (!this.number) {
+    if (!this.number) {
 
-        powerNumbers = '05, 50, 16, 61, 27, 72, 38, 83, 49, 94, ';
-        powerPrice = 10 * Number(this.price);
+      powerNumbers = '05, 50, 16, 61, 27, 72, 38, 83, 49, 94, ';
+      powerPrice = 10 * Number(this.price);
 
 
-      } else {
+    } else {
 
-        let powerNumbersArr = ['05', '50', '16', '61', '27', '72', '38', '83', '49', '94'];
+      let powerNumbersArr = ['05', '50', '16', '61', '27', '72', '38', '83', '49', '94'];
 
-        var arr = [...this.number];
+      var arr = [...this.number];
 
-        var matchNumbersArr = [];
+      var matchNumbersArr = [];
 
-        arr.forEach(e => {
+      arr.forEach(e => {
 
-          let findNumbers = powerNumbersArr.filter(arrBirds => arrBirds.includes(e));
+        let findNumbers = powerNumbersArr.filter(arrBirds => arrBirds.includes(e));
 
-          matchNumbersArr = [...matchNumbersArr, ...findNumbers];
+        matchNumbersArr = [...matchNumbersArr, ...findNumbers];
 
-        });
+      });
 
-        //remove duplicate array value
-        matchNumbersArr = await matchNumbersArr.filter(function (elem, index, self) {
+      //remove duplicate array value
+      matchNumbersArr = await matchNumbersArr.filter(function (elem, index, self) {
 
-          if (index === self.indexOf(elem)) {
-            powerNumbers += elem + ", ";
-          }
+        if (index === self.indexOf(elem)) {
+          powerNumbers += elem + ", ";
+        }
 
-          return index === self.indexOf(elem);
+        return index === self.indexOf(elem);
 
-        });
+      });
 
-        powerPrice = matchNumbersArr.length * Number(this.price);
+      powerPrice = matchNumbersArr.length * Number(this.price);
 
-      }
+    }
 
-      let rowPower = {
-        'uuid': uuidPower,
-        'number': powerNumbers.slice(0, -2),
-        'operator': this.operator,
-        'price': this.price,
-        'amount': powerPrice,
-        'originNumber': this.number
-      };
+    let rowPower = {
+      'uuid': uuidPower,
+      'number': powerNumbers.slice(0, -2),
+      'operator': this.operator,
+      'price': this.price,
+      'amount': powerPrice,
+      'originNumber': this.number
+    };
 
     return rowPower;
   }
 
-  async apuuFunction(){
+  async apuuFunction() {
+
+    if (this.longNumber) {
+      toastr.error('Invalid data input.', 'Invalid!');
+      return false;
+    }
 
     let uuidApuu = this.getUniqueId(4);
-        let apuuNumbers = '';
-        let apuuNumbersArr = [];
-        let apuuPride = 0;
+    let apuuNumbers = '';
+    let apuuNumbersArr = [];
+    let apuuPride = 0;
 
-        if (!this.price) {
+    if (!this.price) {
 
-          toastr.error('Invalid data input.', 'Invalid!');
-          return false;
+      toastr.error('Invalid data input.', 'Invalid!');
+      return false;
 
-        }
+    }
 
-        if (this.number) {
+    if (this.number) {
 
-          let arr = [...this.number];
+      let arr = [...this.number];
 
-          arr.forEach(element => {
+      arr.forEach(element => {
 
-            apuuNumbersArr = [...apuuNumbersArr, ...[element + '' + element]];
+        apuuNumbersArr = [...apuuNumbersArr, ...[element + '' + element]];
 
-            apuuNumbers += element + '' + element + ', ';
+        apuuNumbers += element + '' + element + ', ';
 
-          });
+      });
 
 
-        } else {
+    } else {
 
-          apuuNumbersArr = ['11', '22', '33', '44', '55', '66', '77', '88', '99', '00'];
-          apuuNumbers = '11, 22, 33, 44, 55, 66, 77, 88, 99, 00, ';
+      apuuNumbersArr = ['11', '22', '33', '44', '55', '66', '77', '88', '99', '00'];
+      apuuNumbers = '11, 22, 33, 44, 55, 66, 77, 88, 99, 00, ';
 
-        }
+    }
 
-        apuuPride = apuuNumbersArr.length * Number(this.price);
+    apuuPride = apuuNumbersArr.length * Number(this.price);
 
-        let rowApuu = {
-          'uuid': uuidApuu,
-          'number': apuuNumbers.slice(0, -2),
-          'operator': this.operator,
-          'price': this.price,
-          'amount': apuuPride,
-          'originNumber': this.number
-        };
+    let rowApuu = {
+      'uuid': uuidApuu,
+      'number': apuuNumbers.slice(0, -2),
+      'operator': this.operator,
+      'price': this.price,
+      'amount': apuuPride,
+      'originNumber': this.number
+    };
 
     return rowApuu;
 
   }
 
-  async apwintFunction(){
+  async apwintFunction() {
+
+    if (this.longNumber) {
+      toastr.error('Invalid data input.', 'Invalid!');
+      return false;
+    }
+
     let uuidApwint = this.getUniqueId(4);
 
     if (!this.number || !this.price) {
@@ -557,7 +677,12 @@ export class HomeComponent implements OnInit {
     return rowApwint;
   }
 
-  async nyikoFunction(){
+  async nyikoFunction() {
+
+    if (this.longNumber) {
+      toastr.error('Invalid data input.', 'Invalid!');
+      return false;
+    }
 
     if (!this.price) {
 
@@ -618,6 +743,99 @@ export class HomeComponent implements OnInit {
     };
 
     return rowNyiKo;
+
+  }
+
+  async topFunction() {
+
+    if (this.longNumber) {
+      toastr.error('Invalid data input.', 'Invalid!');
+      return false;
+    }
+
+    if (!this.price) {
+
+      toastr.error('Invalid data input.', 'Invalid!');
+      return false;
+
+    }
+
+    let uuidTop = this.getUniqueId(4);
+    let topPrice = this.price;
+    let topNumbers = '';
+    let topNumberArr = [];
+
+    var arr = [...this.number];
+
+    arr.forEach(element => {
+      for (let i = 0; i < 10; i++) {
+
+        topNumbers += element + '' + i + ', ';
+
+        topNumberArr.push({ 'number': element + '' + i, 'price': topPrice });
+
+      }
+    });
+
+    var totalTopPrice = topNumberArr.length * Number(this.price);
+
+    let rowTop = {
+      'uuid': uuidTop,
+      'number': topNumbers.slice(0, -2),
+      'operator': this.operator,
+      'price': this.price,
+      'amount': totalTopPrice,
+      'originNumber': this.number
+    };
+
+    return rowTop;
+
+  }
+
+  async lastFunction() {
+
+    if (this.longNumber) {
+      toastr.error('Invalid data input.', 'Invalid!');
+      return false;
+    }
+
+    if (!this.price) {
+
+      toastr.error('Invalid data input.', 'Invalid!');
+      return false;
+
+    }
+
+    let uuidLast = this.getUniqueId(4);
+    let lastPrice = this.price;
+    let lastNumbers = '';
+    let lastNumberArr = [];
+
+    var arr = [...this.number];
+
+    arr.forEach(element => {
+      for (let i = 0; i < 10; i++) {
+
+        lastNumbers += i + '' + element + ', ';
+
+        lastNumberArr.push({ 'number': i + '' + element, 'price': lastPrice });
+
+      }
+    });
+
+    var lastTotal = lastNumberArr.length * Number(this.price);
+
+    let rowLast = {
+      'uuid': uuidLast,
+      'number': lastNumbers.slice(0, -2),
+      'operator': this.operator,
+      'price': this.price,
+      'amount': lastTotal,
+      'originNumber': this.number
+    };
+
+    return rowLast;
+
 
   }
 
@@ -693,7 +911,14 @@ export class HomeComponent implements OnInit {
     this.operator = editData.operator;
     this.price = editData.price;
 
-    // console.log(editData);
+    this.longNumber = false;
+    if(this.operator == 'atae' || this.operator == 'apyan'){
+      if(this.number.split(', ').length > 1){
+        this.longNumber = true;
+      }
+    }
+
+    // console.log(this.longNumber);
 
     this.cloneSign = document.getElementById(editData.operator).cloneNode(true);
 
@@ -726,20 +951,20 @@ export class HomeComponent implements OnInit {
     //Log object to Console.
     // console.log("Before update: ", this.tableRow[objIndex]);
 
-    let updateData:any;
+    let updateData: any;
 
     switch (this.operator) {
 
       // Start atae update
       case 'atae':
         updateData = await this.ataeFunction();
-      break;
+        break;
       // End atae update
 
       // Start apyan update condition
       case 'apyan':
         updateData = await this.apyanFunction();
-      break;
+        break;
 
       // Start update ပတ်လှည့် condition
       case 'patlal':
@@ -770,13 +995,25 @@ export class HomeComponent implements OnInit {
         updateData = await this.nyikoFunction();
         break;
       // End Nyi Ko condition
-      
+
+      // Start top condition
+      case 'top':
+        updateData = await this.topFunction();
+        break;
+      // End top condition
+
+      // Start last condition
+      case 'last':
+        updateData = await this.lastFunction();
+        break;
+      // End last condition
+
     }
 
-    if(updateData){
+    if (updateData) {
 
       this.totalAmount = this.totalAmount - Number(this.tableRow[objIndex]['amount']) + Number(updateData['amount']);
-       this.tableRow[objIndex] = await updateData;
+      this.tableRow[objIndex] = await updateData;
 
       this.clearFunction('all');
 
@@ -786,31 +1023,31 @@ export class HomeComponent implements OnInit {
 
   }
 
-  localStorageSave(){
+  localStorageSave() {
 
     localStorage.setItem("tableRowData", JSON.stringify(this.tableRow));
     localStorage.setItem("totalAmount", JSON.stringify(this.totalAmount));
 
   }
 
-  async deleteRow(){
+  async deleteRow() {
 
     let uuid = localStorage.getItem('uuid');
     let objIndex = this.tableRow.findIndex((obj => obj.uuid == uuid));
 
     console.log(objIndex);
 
-    
+
 
     if (objIndex > -1) {
 
       this.totalAmount = await this.totalAmount - Number(this.tableRow[objIndex]['amount']);
-      
+
       this.tableRow.splice(objIndex, 1);
 
       this.localStorageSave();
 
-      if(this.editRowId){
+      if (this.editRowId) {
         this.clearFunction('all');
       }
 
@@ -821,19 +1058,19 @@ export class HomeComponent implements OnInit {
 
   }
 
-  async confirmOrder(){
-    
+  async confirmOrder() {
+
     let data = {
-      'roles' : this.tableRow,
-      'total' : this.totalAmount,
-      'name' : this.name,
-      'date' : this.date
+      'roles': this.tableRow,
+      'total': this.totalAmount,
+      'name': this.name,
+      'date': this.date
     };
 
 
     let time = {
-      'am' : this.am,
-      'pm' : this.pm
+      'am': this.am,
+      'pm': this.pm
     };
 
     await this.orderService.saveOrder(data, time);
@@ -842,7 +1079,7 @@ export class HomeComponent implements OnInit {
 
   }
 
-  calearTableData(){
+  calearTableData() {
 
     this.tableRow = [];
     this.totalAmount = 0;
@@ -856,14 +1093,16 @@ export class HomeComponent implements OnInit {
 
   }
 
-  showModal(uuid){
+  showModal(uuid) {
 
     localStorage.setItem('uuid', uuid);
     this.showModalBox = true;
   }
 
-  hideModal(){
+  hideModal() {
     this.showModalBox = false;
   }
+
+
 
 }

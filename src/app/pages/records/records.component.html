@@ -1,14 +1,219 @@
 <app-header></app-header>
-<div class="grid  gap-4 justify-items-center ">
-   <div class="pt-4 md:w-3/5">
-    <h1 class="text-3xl text-center text-indigo-800 mb-6 font-bold">{{date}} Records</h1>
+<div class="grid gap-4 justify-items-center ">
+    <div class="pt-4 px-3">
+        <h1 class="md:text-3xl text-center text-indigo-800 mb-6 font-bold"> Records</h1>
 
-    
-    <p>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Harum reiciendis adipisci laudantium aliquam eum enim ducimus, sequi ea dolore nulla cum sint odit exercitationem! Facilis sint dolore delectus id ipsa?
-    </p>
+        <div class="mb-2 grid gap-4 justify-items-center">
 
-    
-   </div>
+            <div >
+                <input [checked]="time == 'AM'" type="radio" id="am" class="w-5 h-5" [(ngModel)]="time" value="AM">
+                <label for="am" class="text-xl"> AM</label>
+                <span class="p-2"></span>
+                <input [checked]="time == 'PM'" type="radio" id="pm" class="w-5 h-5" [(ngModel)]="time" value="PM">
+               
+                <label for="pm" class="text-xl"> PM</label>
+                <span class="p-2"></span>
+                <input type="date" class="p-2 text-indigo-700 border-b-2 border-indigo-500 outline-none" [(ngModel)]="recordDate">
+
+                <button (click)="searchRecord()" class=" pt-2 pb-2.5 px-4 bg-indigo-500 hover:bg-indigo-800 text-white">
+                    Search
+                </button>
+            </div>
+
+            
+        </div>
+
+        <div class="shadow flex mb-2">
+            <input class="w-full rounded p-2" type="text" placeholder="Search..." [(ngModel)]="search_number">
+            <button (click)="searchNumber()"
+                class="bg-white w-auto flex justify-end items-center text-blue-500 p-2 hover:text-blue-400">
+                <i class="material-icons">search</i>
+            </button>
+        </div>
+
+        <table class="w-full">
+            <thead>
+                <tr class="bg-indigo-700 text-white">
+                    <th class="md:px-4 py-4 border">Name</th>
+                    <th class="md:px-4 py-4 border">Numbers</th>
+                    <th class="md:px-4 py-4 border">Amount</th>
+                    <th class="md:px-4 py-4 border text-center">
+                        Detail
+                    </th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                <tr *ngFor="let item of recordRows; let i = index;" class="hover:bg-indigo-100 border" id="row{{i}}">
+                    <td class=" border md:px-4 md:p-3">
+                        {{item.name}}
+                    </td>
+                    <td class="border md:px-4">
+                        {{item.allNumbers.slice(0, -2)}}
+                    </td>
+                    <td class="text-right border md:px-4">
+                        {{item.total}}
+                    </td>
+                    <td class="text-center">
+                        <button (click)="showDetails(i)">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-500" viewBox="0 0 20 20"
+                                fill="currentColor">
+                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                <path fill-rule="evenodd"
+                                    d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </td>
+                </tr>
+
+                
+
+                <tr>
+                    <td *ngIf="noRecords" class="bg-gray-100 text-center px-4 py-4" colspan="5">
+                        <strong class="text-red-500">No Record!</strong>
+                    </td>
+                </tr>
+
+            </tbody>
+        </table>
+
+
+    </div>
 </div>
 
+<!-- Detail Models -->
+
+<div class="fixed top-0 left-0 right-0 bottom-0 w-full h-screen z-50  bg-gray-700 bg-opacity-40 flex flex-col items-center justify-center max-h-screen"
+    *ngIf="showModalBox">
+    <div class="bg-gray-50 max-w-xl py-2 px-3 rounded shadow-md text-gray-800 w-full overflow-scroll z-10">
+        <div class="flex justify-between items-center border-b-2 pb-2">
+            <h4 class="text-lg font-bold text-center w-full text-indigo-600">Detail Information</h4>
+            <button (click)="hideModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.414 6.414a2 2 0 001.414.586H19a2 2 0 002-2V7a2 2 0 00-2-2h-8.172a2 2 0 00-1.414.586L3 12z" />
+                </svg>
+            </button>
+
+        </div>
+        <div class="mt-2 pb-2 border-b-2">
+            <h2 class="text-md text-lg text-bold pb-2 text-center">{{detailRows.name}}</h2>
+            <table class="table-auto w-full ">
+                <thead>
+                    <tr class="bg-indigo-700 text-white">
+                        <th class="md:px-4 py-4 border">Origin</th>
+                        <th class="md:px-4 py-4 border">Numbers</th>
+                        <th class="md:px-4 py-4 border">Key</th>
+                        <th class="md:px-4 py-4 border">Rate</th>
+                        <th class="md:px-4 py-4 border">Amount</th>
+
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <tr *ngFor="let item of detailRows.roles; let i = index;" class="hover:bg-indigo-100 border"
+                        id="row-{{item.uuid}}">
+                        <td>
+                            {{item.originNumber}}
+                        </td>
+                        <td class=" border md:p-3">
+                            {{item.number}}
+                        </td>
+                        <td class="text-center border" id="{{item.uuid}}">
+
+                            <!-- အတည့် -->
+                            <svg [ngClass]="item.operator == 'atae' ? '' : 'hidden'" class="w-4 inline"
+                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" id="atae">
+                                <path fill-rule="evenodd"
+                                    d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z"
+                                    clip-rule="evenodd" />
+                            </svg>
+
+                            <!-- အပြန် -->
+                            <svg [ngClass]="item.operator == 'apyan' ? '' : 'hidden'" class="w-4 inline"
+                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" id="apyan">
+                                <path
+                                    d="M8 5a1 1 0 100 2h5.586l-1.293 1.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L13.586 5H8zM12 15a1 1 0 100-2H6.414l1.293-1.293a1 1 0 10-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L6.414 15H12z" />
+                            </svg>
+
+                            <!-- ပတ်လှည့် -->
+                            <svg [ngClass]="item.operator == 'patlal' ? '' : 'hidden'" class="w-4 inline"
+                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" id="patlal">
+                                <path fill-rule="evenodd"
+                                    d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+                                    clip-rule="evenodd" />
+                            </svg>
+
+                            <!-- နက္ခတ် -->
+                            <svg [ngClass]="item.operator == 'netkhat' ? '' : 'hidden'" class="w-4 inline"
+                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" id="netkhat">
+                                <path fill-rule="evenodd"
+                                    d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z"
+                                    clip-rule="evenodd" />
+                            </svg>
+
+                            <!-- ပါဝါ -->
+                            <svg [ngClass]="item.operator == 'power' ? '' : 'hidden'" class="w-4 inline"
+                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" id="power">
+                                <path fill-rule="evenodd"
+                                    d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"
+                                    clip-rule="evenodd" />
+                            </svg>
+
+                            <!-- အပူး -->
+                            <svg [ngClass]="item.operator == 'apuu' ? '' : 'hidden'" class="w-7 inline"
+                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" id="apuu">
+                                <path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
+                                <path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5h8a2 2 0 00-2-2H5z" />
+                            </svg>
+
+                            <!-- အပွင့် -->
+                            <svg [ngClass]="item.operator == 'apwint' ? '' : 'hidden'" class="w-4 inline"
+                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" id="apwint">
+                                <path
+                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            </svg>
+
+                            <!-- ညီကို -->
+                            <svg [ngClass]="item.operator == 'nyiko' ? '' : 'hidden'" class="w-4 inline"
+                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" id="nyiko">
+                                <path
+                                    d="M5 12a1 1 0 102 0V6.414l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L5 6.414V12zM15 8a1 1 0 10-2 0v5.586l-1.293-1.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L15 13.586V8z" />
+                            </svg>
+
+
+
+                        </td>
+                        <td class="text-right border md:px-4">
+                            {{item.price}}
+                        </td>
+                        <td class="text-right border md:px-4">
+                            {{item.amount}}
+                        </td>
+
+                    </tr>
+
+
+
+                    <tr class="bg-indigo-700 ">
+                        <td class="border md:px-4 py-4 text-right text-white" colspan="4">Sub Total</td>
+                        <td class="border px-4 py-4 text-right text-white">
+                            {{detailRows.total}}
+                        </td>
+
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+        <div class="mt-3 flex justify-end space-x-3">
+            <button class="px-3 py-1 rounded bg-gray-50 hover:bg-gray-200" (click)="hideModal()">Close </button>
+        </div>
+    </div>
+</div>
+
+<!-- End Detail Models -->
