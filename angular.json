@@ -32,6 +32,7 @@
               "node_modules/toastr/build/toastr.css"
             ],
             "scripts": [
+              "src/assets/js/html2canvas.js"
             ],
             "serviceWorker": true,
             "ngswConfigPath": "ngsw-config.json"

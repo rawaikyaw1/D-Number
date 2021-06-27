@@ -39,7 +39,7 @@ import { TableComponent } from './pages/table/table.component';
       {path: 'dashboard', component: HomeComponent, canActivate:[AuthGuard]},
       {path: 'login', component: LoginComponent},
       {path: '', component: LoginComponent},
-      // {path: 'register', component: RegisterComponent},
+      {path: 'register', component: RegisterComponent},
       // {path: 'history', component: HistoryComponent},
       {path: 'records', component: RecordsComponent, canActivate:[AuthGuard]},
       {path: 'table', component: TableComponent, canActivate:[AuthGuard]},

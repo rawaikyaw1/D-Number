@@ -3,6 +3,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { formatDate } from '@angular/common';
 import { OrderService } from 'src/app/services/order.service';
 import { element } from 'protractor';
+import { table } from 'console';
 
 
 declare var require: any;
@@ -28,6 +29,7 @@ export class HomeComponent implements OnInit {
   showModalBox: boolean;
   connector: any;
   longNumber: any;
+  multiPrice: boolean;
 
   tableRow = [];
 
@@ -43,6 +45,7 @@ export class HomeComponent implements OnInit {
     this.showModalBox = false;
     this.connector = false;
     this.longNumber = false;
+    this.multiPrice = false;
 
 
     // localStorage.setItem("tableRowData", JSON.stringify([]));
@@ -50,20 +53,15 @@ export class HomeComponent implements OnInit {
 
     this.tableRow = localStorage.getItem("tableRowData") ? JSON.parse(localStorage.getItem("tableRowData")) : [];
 
+    console.log(this.tableRow);
+
     this.totalAmount = localStorage.getItem('totalAmount') ? Number(JSON.parse(localStorage.getItem("totalAmount"))) : 0;
-
-    // this.tableRow = [];
-    // this.totalAmount = 0;
-
 
     if (formatDate(toDay, 'a', 'en-US') == 'AM') {
       this.am = true;
     } else {
       this.pm = true;
     }
-
-
-
 
   }
 
@@ -78,24 +76,33 @@ export class HomeComponent implements OnInit {
 
       this.number += number;
 
-      var arr = this.number.split(", ");
-      var checkLength = 0;
-      await arr.forEach(element => {
-        checkLength = element.length;
-      });
-
-      if (checkLength > 1) {
-        this.connector = false;
-      }
+      // this.changeConnectorState();
 
     } else {
 
       this.price += number;
 
+      
+
     }
 
-    // console.log(this.price, this.number, this.date);
+    this.changeConnectorState();
+  }
 
+  async changeConnectorState() {
+
+    var arr = this.number.split(", ");
+    var checkLength = 0;
+    await arr.forEach(element => {
+      checkLength = element.length;
+    });
+    console.log(arr, checkLength);
+    if (checkLength == 2) {
+      this.connector = false;
+    }else{
+      this.connector = true;
+    }
+    // console.log(this.longNumber, this.connector, this.multiPrice);
   }
 
   numberConnect(connector) {
@@ -107,6 +114,17 @@ export class HomeComponent implements OnInit {
       this.longNumber = true;
 
     }
+
+    if (this.operator && this.price && !this.multiPrice) {
+
+      this.price += connector + ' ';
+
+      this.multiPrice = true;
+
+    }
+
+    this.changeLongNumberState();
+    this.changeConnectorState();
 
   }
 
@@ -120,6 +138,8 @@ export class HomeComponent implements OnInit {
 
     this.operator = operator;
 
+    
+
   }
 
   clearFunction(all = null) {
@@ -131,11 +151,16 @@ export class HomeComponent implements OnInit {
 
       this.editRowId = null;
       this.longNumber = false;
+      this.multiPrice =false;
 
     } else {
       if (this.price) {
 
         this.price = this.price.substring(0, this.price.length - 1);
+
+        if (this.price.indexOf(',') < 0) {
+          this.multiPrice = false;
+        }
 
       } else if (this.operator) {
 
@@ -144,11 +169,20 @@ export class HomeComponent implements OnInit {
 
       } else if (this.number) {
 
+        this.changeLongNumberState();
         this.number = this.number.substring(0, this.number.length - 1);
 
       }
     }
 
+    this.changeConnectorState();
+
+  }
+
+  async changeLongNumberState(){
+    if (this.number.indexOf(',') < 0) {
+      this.longNumber = false;
+    }
   }
 
   async confirmFunction() {
@@ -166,6 +200,7 @@ export class HomeComponent implements OnInit {
       // Start အပြန် condition
       case 'apyan':
         insertData = await this.apyanFunction();
+
         break;
       // End အပြန် condition
 
@@ -226,9 +261,17 @@ export class HomeComponent implements OnInit {
 
     }
 
-    if (insertData) {
-      this.addToTableData(insertData, insertData['amount']);
+    if(this.multiPrice){
+      if (insertData) {
+          this.addToTableData(insertData[0], insertData[0]['amount']);
+          this.addToTableData(insertData[1], insertData[0]['amount']);
+      }
+    }else{
+      if (insertData) {
+        this.addToTableData(insertData, insertData['amount']);
+      }
     }
+    
 
   }
 
@@ -236,7 +279,7 @@ export class HomeComponent implements OnInit {
 
     var arr = [...this.number];
 
-    if (!this.price || !this.number || arr.length < 2) {
+    if (!this.price || !this.number || arr.length < 2 || this.multiPrice) {
 
       toastr.error('Invalid data input.', 'Invalid!');
       return false;
@@ -282,7 +325,7 @@ export class HomeComponent implements OnInit {
   }
 
   async apyanFunction() {
-    if (!this.price || !this.number) {
+    if (!this.price || !this.number ) {
 
       toastr.error('Invalid data input.', 'Invalid!');
       return false;
@@ -293,8 +336,10 @@ export class HomeComponent implements OnInit {
     let group = [];
     let price = this.price;
     let groupNumber = '';
+    var groupNumber2 = '';
+    var group2 = [];
 
-    if (this.longNumber) {
+    if (this.longNumber && !this.multiPrice) {
 
       var numberArr = this.number.split(", ");
 
@@ -316,7 +361,34 @@ export class HomeComponent implements OnInit {
 
       });
 
-    } else {
+    } 
+    else if(this.multiPrice){
+        
+      var numberArr = this.number.split(", ");
+      
+      var multiPrice = this.price.split(", ");
+
+      
+      numberArr.forEach(element => {
+        // console.log(element[0], element[1]);
+        if (element[1] != element[0]) {
+
+          var number = element[1] + '' + element[0];
+          group2.push({ 'number': number, 'price up': multiPrice[1] });
+
+          groupNumber2 += number+', ';
+
+        }
+
+        groupNumber += element + ', ';
+        
+
+      });
+
+      group = numberArr;
+
+    }
+    else {
 
       var arr = [...this.number];
 
@@ -332,30 +404,58 @@ export class HomeComponent implements OnInit {
         return false;
       }
 
-      // console.log(groupNumber);
-
-
 
     }
 
-    let aPyanPrice = group.length * Number(this.price);
+    if(this.multiPrice){
 
-    let rowApyan = {
-      'uuid': uuidApyan,
-      'number': groupNumber.slice(0, -2),
-      'operator': this.operator,
-      'price': this.price,
-      'amount': aPyanPrice,
-      'originNumber': this.number
-    };
+      let uuidApyan2 = this.getUniqueId(4);
+      var multiPrice = this.price.split(", ");
 
-    return rowApyan;
+      let aPyanPrice1 = group.length * Number(multiPrice[0]);
+      let aPyanPrice2 = group2.length * Number(multiPrice[1]);
+
+      let rowApyan = [{
+        'uuid': uuidApyan,
+        'number': groupNumber.slice(0, -2),
+        'operator': 'atae',
+        'price': multiPrice[0],
+        'amount': aPyanPrice1,
+        'originNumber': this.number
+      },{
+        'uuid': uuidApyan2,
+        'number': groupNumber2.slice(0, -2),
+        'operator': 'atae',
+        'price': multiPrice[1],
+        'amount': aPyanPrice2,
+        'originNumber': this.number
+      }];
+
+      return rowApyan;
+
+    }else{
+
+      let aPyanPrice = group.length * Number(this.price);
+
+      let rowApyan = {
+        'uuid': uuidApyan,
+        'number': groupNumber.slice(0, -2),
+        'operator': this.operator,
+        'price': this.price,
+        'amount': aPyanPrice,
+        'originNumber': this.number
+      };
+
+      return rowApyan;
+
+    }
+    
 
   }
 
   async patlalFunction() {
 
-    if (this.longNumber) {
+    if (this.longNumber || this.multiPrice) {
       toastr.error('Invalid data input.', 'Invalid!');
       return false;
     }
@@ -413,7 +513,7 @@ export class HomeComponent implements OnInit {
 
   async netkhatFunction() {
 
-    if (this.longNumber) {
+    if (this.longNumber || this.multiPrice) {
       toastr.error('Invalid data input.', 'Invalid!');
       return false;
     }
@@ -479,7 +579,7 @@ export class HomeComponent implements OnInit {
 
   async powerFunction() {
 
-    if (this.longNumber) {
+    if (this.longNumber || this.multiPrice) {
       toastr.error('Invalid data input.', 'Invalid!');
       return false;
     }
@@ -546,7 +646,7 @@ export class HomeComponent implements OnInit {
 
   async apuuFunction() {
 
-    if (this.longNumber) {
+    if (this.longNumber || this.multiPrice) {
       toastr.error('Invalid data input.', 'Invalid!');
       return false;
     }
@@ -600,7 +700,7 @@ export class HomeComponent implements OnInit {
 
   async apwintFunction() {
 
-    if (this.longNumber) {
+    if (this.longNumber || this.multiPrice) {
       toastr.error('Invalid data input.', 'Invalid!');
       return false;
     }
@@ -679,7 +779,7 @@ export class HomeComponent implements OnInit {
 
   async nyikoFunction() {
 
-    if (this.longNumber) {
+    if (this.longNumber || this.multiPrice) {
       toastr.error('Invalid data input.', 'Invalid!');
       return false;
     }
@@ -748,7 +848,7 @@ export class HomeComponent implements OnInit {
 
   async topFunction() {
 
-    if (this.longNumber) {
+    if (this.longNumber || this.multiPrice) {
       toastr.error('Invalid data input.', 'Invalid!');
       return false;
     }
@@ -794,7 +894,7 @@ export class HomeComponent implements OnInit {
 
   async lastFunction() {
 
-    if (this.longNumber) {
+    if (this.longNumber || this.multiPrice) {
       toastr.error('Invalid data input.', 'Invalid!');
       return false;
     }
@@ -875,7 +975,9 @@ export class HomeComponent implements OnInit {
 
     await this.tableRow.push(row);
 
-    this.totalAmount = await this.totalAmount + Number(price);
+    // console.log(row);
+
+    // this.totalAmount = await this.totalAmount + Number(row.amount);
 
     this.localStorageSave();
 
@@ -912,8 +1014,8 @@ export class HomeComponent implements OnInit {
     this.price = editData.price;
 
     this.longNumber = false;
-    if(this.operator == 'atae' || this.operator == 'apyan'){
-      if(this.number.split(', ').length > 1){
+    if (this.operator == 'atae' || this.operator == 'apyan') {
+      if (this.number.split(', ').length > 1) {
         this.longNumber = true;
       }
     }
@@ -930,9 +1032,12 @@ export class HomeComponent implements OnInit {
   }
 
   appendSign(uuid, operator) {
+    console.log(uuid, operator);
+
+    
 
     var sign = document.getElementById(operator).cloneNode(true);
-    // console.log(uuid, operator);
+    
 
     var sign = document.getElementById(operator).cloneNode(true);
 
@@ -1012,21 +1117,37 @@ export class HomeComponent implements OnInit {
 
     if (updateData) {
 
-      this.totalAmount = this.totalAmount - Number(this.tableRow[objIndex]['amount']) + Number(updateData['amount']);
-      this.tableRow[objIndex] = await updateData;
+      console.log(updateData);
 
-      this.clearFunction('all');
+      if(this.multiPrice){
+        this.tableRow.splice(objIndex, 1);
+        this.addToTableData(updateData[0], updateData[0]['amount']);
+        this.addToTableData(updateData[1], updateData[0]['amount']);
+      }else{
+        this.tableRow[objIndex] = await updateData;
+      }
 
-      this.localStorageSave();
+      // this.totalAmount = this.totalAmount - Number(this.tableRow[objIndex]['amount']) + Number(updateData['amount']);
+      // this.tableRow[objIndex] = await updateData;
+
+      // this.clearFunction('all');
+
+      // this.localStorageSave();
 
     }
 
   }
 
-  localStorageSave() {
+  async localStorageSave() {
 
     localStorage.setItem("tableRowData", JSON.stringify(this.tableRow));
-    localStorage.setItem("totalAmount", JSON.stringify(this.totalAmount));
+
+    var totalAmount = 0;
+    await this.tableRow.forEach(element => {
+      totalAmount += Number(element.amount);
+    });
+    this.totalAmount = totalAmount;
+    localStorage.setItem("totalAmount", JSON.stringify(totalAmount));
 
   }
 
@@ -1041,7 +1162,7 @@ export class HomeComponent implements OnInit {
 
     if (objIndex > -1) {
 
-      this.totalAmount = await this.totalAmount - Number(this.tableRow[objIndex]['amount']);
+      // this.totalAmount = await this.totalAmount - Number(this.tableRow[objIndex]['amount']);
 
       this.tableRow.splice(objIndex, 1);
 
@@ -1055,6 +1176,8 @@ export class HomeComponent implements OnInit {
 
     this.showModalBox = false;
     localStorage.removeItem("uuid");
+
+    document.getElementById('row-').remove();
 
   }
 

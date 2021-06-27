@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { formatDate } from '@angular/common';
 import { OrderService } from 'src/app/services/order.service';
 import { HostListener } from "@angular/core";
+declare let html2canvas: any;
 
 @Component({
   selector: 'app-table',
@@ -24,6 +25,8 @@ export class TableComponent implements OnInit {
   search_number: any;
   searchData:boolean;
   totalAmount: number;
+  capturedImage;
+  allNumberRoles;
 
   @HostListener('window:resize', ['$event'])
     getScreenSize(event?) {
@@ -34,7 +37,8 @@ export class TableComponent implements OnInit {
 
   ngOnInit(): void {
 
-    var toDay = Date.now(); this.searchData = false; this.totalAmount = 0;
+    var toDay = Date.now(); this.searchData = false; 
+    this.totalAmount = 0; this.allNumberRoles = 0;
 
     if (formatDate(toDay, 'a', 'en-US') == 'AM') {
       this.time = 'AM';
@@ -53,6 +57,7 @@ export class TableComponent implements OnInit {
   async searchRecord(recordtime = null){
 
     this.totalAmount = 0;
+    
     var collection = recordtime? recordtime : this.recordDate+this.time;
     
     var arrayRecords = await this.orderService.getRecords(collection);
@@ -87,14 +92,18 @@ export class TableComponent implements OnInit {
     });
 
     this.recordRows = totalArr;
-
+    this.allNumberRoles = 100;
   //  console.log(this.totalAmount);
   
 
   }
 
   counter(i: number) {
+
+    // setTimeout(() => {
       return new Array(i);
+    // }, 1);
+      
   }
 
   async searchNumber(){
@@ -112,6 +121,20 @@ export class TableComponent implements OnInit {
     }
 
     
+  }
+
+  downloadTotalImage() {
+
+    html2canvas(document.querySelector("#capture")).then(canvas => {
+
+      var link = document.createElement("a");
+          document.body.appendChild(link);
+          link.download = this.recordDate+this.time+".png";
+          link.href = canvas.toDataURL("image/png");
+          link.target = '_blank';
+          link.click();
+
+    });
   }
 
 }

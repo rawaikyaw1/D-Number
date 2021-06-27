@@ -38,7 +38,7 @@ export class LoginService {
 
       var loginData = await this.firestore.collection(this.user.uid).ref.get()
       .then(async (response)=>{
-        console.log(response.docs[0].id);
+        // console.log(response.docs);
         
         if(response.docs.length){
 
@@ -58,7 +58,7 @@ export class LoginService {
       .catch(e => {
         // console.log(e);
         this.loader.requestEnded();
-        toastr.error(e, 'Error!');
+        toastr.error(e, 'H  Error!');
       });
 
       this.router.navigate(['dashboard']);
