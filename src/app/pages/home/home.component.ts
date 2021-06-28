@@ -53,7 +53,7 @@ export class HomeComponent implements OnInit {
 
     this.tableRow = localStorage.getItem("tableRowData") ? JSON.parse(localStorage.getItem("tableRowData")) : [];
 
-    console.log(this.tableRow);
+    // console.log(this.tableRow);
 
     this.totalAmount = localStorage.getItem('totalAmount') ? Number(JSON.parse(localStorage.getItem("totalAmount"))) : 0;
 
@@ -96,7 +96,7 @@ export class HomeComponent implements OnInit {
     await arr.forEach(element => {
       checkLength = element.length;
     });
-    console.log(arr, checkLength);
+    // console.log(arr, checkLength);
     if (checkLength == 2) {
       this.connector = false;
     }else{
@@ -260,6 +260,8 @@ export class HomeComponent implements OnInit {
       // End last condition
 
     }
+
+    console.log(insertData); 
 
     if(this.multiPrice){
       if (insertData) {
@@ -1032,7 +1034,7 @@ export class HomeComponent implements OnInit {
   }
 
   appendSign(uuid, operator) {
-    console.log(uuid, operator);
+    // console.log(uuid, operator);
 
     
 
@@ -1156,7 +1158,7 @@ export class HomeComponent implements OnInit {
     let uuid = localStorage.getItem('uuid');
     let objIndex = this.tableRow.findIndex((obj => obj.uuid == uuid));
 
-    console.log(objIndex);
+    // console.log(objIndex);
 
 
 

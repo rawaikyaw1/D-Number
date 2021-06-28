@@ -20,7 +20,7 @@ export class OrderService {
 
     this.loader.requestStart();
 
-    
+    console.log(data.roles.length, data, data.roles);
     if (data.roles.length) {
 
       await this.checkTokenMatch(data, time);
@@ -94,6 +94,11 @@ export class OrderService {
 
       });
 
+    })
+    .catch(e => {
+      console.log(e);
+      this.loader.requestEnded();
+      toastr.error(e, 'Error!');
     });
 
     this.loader.requestEnded();
@@ -105,25 +110,45 @@ export class OrderService {
   async checkTokenMatch(data, time) {
 
     let user = JSON.parse(localStorage.getItem('user'));
-    // console.log(user['stsTokenManager'].accessToken);
+    
     await this.firestore.collection(user.uid).ref.get()
     .then((res)=>{
-      res.forEach(element => {
-        // console.log(element.data()['collection']['token']);
 
-        if(user['stsTokenManager'].accessToken != element.data()['collection']['token']){
-          this.loginService.logout();
+      if(res.docs.length){
 
-          toastr.error('Session expired!', 'Invalid!');
-          this.loader.requestEnded();
-          
-        }else{
+        res.forEach(element => {
+          // console.log(element.data()['collection']['token']);
+  
+          if(user['stsTokenManager'].accessToken != element.data()['collection']['token']){
+            this.loginService.logout();
+  
+            toastr.error('Session expired!', 'Invalid!');
+            this.loader.requestEnded();
+            
+          }else{
+  
+            console.log('match');
+            this.combineData(data, time);
+            this.loader.requestEnded();
+  
+          }
+  
+        });
 
-          this.combineData(data, time);
+      }else{
 
-        }
+        toastr.error('Session expired! Please login again.', 'Expired!');
+        this.loader.requestEnded();
 
-      });
+      }
+
+      
+
+    })
+    .catch(e => {
+      console.log(e);
+      this.loader.requestEnded();
+      toastr.error(e, 'Error!');
     });
 
   }

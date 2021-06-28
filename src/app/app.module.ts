@@ -18,6 +18,7 @@ import { LoadingComponent } from './common/loading/loading.component';
 import { RecordsComponent } from './pages/records/records.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { TableComponent } from './pages/table/table.component';
+import { QRCodeModule } from 'angular2-qrcode';
 
 @NgModule({
   declarations: [
@@ -31,6 +32,7 @@ import { TableComponent } from './pages/table/table.component';
     LoadingComponent,
     RecordsComponent,
     TableComponent
+    
   ],
   imports: [
     BrowserModule,
@@ -54,6 +56,7 @@ import { TableComponent } from './pages/table/table.component';
       // or after 30 seconds (whichever comes first).
       registrationStrategy: 'registerWhenStable:30000'
     }),
+    QRCodeModule
   ],
   providers: [LoginService],
   bootstrap: [AppComponent],

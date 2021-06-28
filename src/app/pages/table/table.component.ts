@@ -11,10 +11,15 @@ declare let html2canvas: any;
 })
 export class TableComponent implements OnInit {
 
+  
+
   constructor(private orderService: OrderService) { 
     this.getScreenSize();
   }
 
+  title:string;
+  elementType:any;
+  qrValue:string;
   recordRows:any;
   date: string;
   time: string;
@@ -39,6 +44,7 @@ export class TableComponent implements OnInit {
 
     var toDay = Date.now(); this.searchData = false; 
     this.totalAmount = 0; this.allNumberRoles = 0;
+    this.title = 'DNumber'; this.qrValue = ''; this.elementType = 'url';
 
     if (formatDate(toDay, 'a', 'en-US') == 'AM') {
       this.time = 'AM';
@@ -69,8 +75,9 @@ export class TableComponent implements OnInit {
     }
 
     var totalArr = {};
+    
 
-   console.log(this.totalAmount);
+  //  console.log(this.totalAmount);
     
     await arrayRecords.forEach(data => {
       
@@ -79,6 +86,7 @@ export class TableComponent implements OnInit {
           arr.forEach((number, index) => {
             if (totalArr.hasOwnProperty(number)) {
               totalArr[number] = Number(totalArr[number]) + Number(records.price);
+              
             } else {
               totalArr[number] = Number(records.price);
             }
@@ -91,9 +99,27 @@ export class TableComponent implements OnInit {
 
     });
 
-    this.recordRows = totalArr;
-    this.allNumberRoles = 100;
-  //  console.log(this.totalAmount);
+    var objectArr = []; 
+
+    for (let i = 0; i < 100; i++) {
+      var number;
+      if(i < 10){
+        number = '0'+i;
+      }else{
+        number = i.toString();
+      }
+
+      if(totalArr[number] === undefined){
+        objectArr.push({'number': number, 'price': 0});
+      }else{
+        objectArr.push({'number': number, 'price': totalArr[number]});
+      }
+      
+    }
+    
+
+    this.recordRows = objectArr;
+    this.qrValue = JSON.stringify(totalArr);
   
 
   }
