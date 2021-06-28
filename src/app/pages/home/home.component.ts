@@ -1192,7 +1192,7 @@ export class HomeComponent implements OnInit {
       'date': this.date
     };
 
-
+console.log(data);
     let time = {
       'am': this.am,
       'pm': this.pm

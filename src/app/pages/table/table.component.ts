@@ -32,6 +32,8 @@ export class TableComponent implements OnInit {
   totalAmount: number;
   capturedImage;
   allNumberRoles;
+  showQrCode;
+  user;
 
   @HostListener('window:resize', ['$event'])
     getScreenSize(event?) {
@@ -45,6 +47,8 @@ export class TableComponent implements OnInit {
     var toDay = Date.now(); this.searchData = false; 
     this.totalAmount = 0; this.allNumberRoles = 0;
     this.title = 'DNumber'; this.qrValue = ''; this.elementType = 'url';
+    this.showQrCode = false;
+    this.user = JSON.parse(localStorage.getItem('user'));
 
     if (formatDate(toDay, 'a', 'en-US') == 'AM') {
       this.time = 'AM';
@@ -55,7 +59,6 @@ export class TableComponent implements OnInit {
 
     this.searchRecord(this.recordDate+this.time);
 
-    
 
   }
 
@@ -100,6 +103,7 @@ export class TableComponent implements OnInit {
     });
 
     var objectArr = []; 
+    var qrString = '';
 
     for (let i = 0; i < 100; i++) {
       var number;
@@ -111,15 +115,17 @@ export class TableComponent implements OnInit {
 
       if(totalArr[number] === undefined){
         objectArr.push({'number': number, 'price': 0});
+        qrString+= 0+',';
       }else{
         objectArr.push({'number': number, 'price': totalArr[number]});
+        qrString += totalArr[number]+',';
       }
       
     }
     
-
+    qrString+=this.user.email;
     this.recordRows = objectArr;
-    this.qrValue = JSON.stringify(totalArr);
+    this.qrValue = qrString;
   
 
   }
@@ -161,6 +167,14 @@ export class TableComponent implements OnInit {
           link.click();
 
     });
+  }
+
+  shareQrCode(){
+    if(this.showQrCode){
+      this.showQrCode = false;
+    }else{
+      this.showQrCode = true;
+    }
   }
 
 }

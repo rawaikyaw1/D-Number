@@ -23,6 +23,7 @@
     "@angular/router": "^11.2.14",
     "@angular/service-worker": "^11.2.14",
     "angular2-qrcode": "^2.0.3",
+    "angular2-qrscanner": "^1.0.7",
     "firebase": "^8.6.2",
     "ngx-device-detector": "^2.1.1",
     "rxjs": "^6.6.7",

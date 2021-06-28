@@ -19,6 +19,8 @@ import { RecordsComponent } from './pages/records/records.component';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { TableComponent } from './pages/table/table.component';
 import { QRCodeModule } from 'angular2-qrcode';
+import { NgQrScannerModule } from 'angular2-qrscanner';
+import { QrcodeComponent } from './pages/qrcode/qrcode.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +33,8 @@ import { QRCodeModule } from 'angular2-qrcode';
     HomeComponent,
     LoadingComponent,
     RecordsComponent,
-    TableComponent
+    TableComponent,
+    QrcodeComponent
     
   ],
   imports: [
@@ -45,6 +48,7 @@ import { QRCodeModule } from 'angular2-qrcode';
       // {path: 'history', component: HistoryComponent},
       {path: 'records', component: RecordsComponent, canActivate:[AuthGuard]},
       {path: 'table', component: TableComponent, canActivate:[AuthGuard]},
+      {path: 'qrcode', component: QrcodeComponent, canActivate:[AuthGuard]},
     ]),
     AngularFireModule.initializeApp(environment.firebaseConfig),
     FormsModule,
@@ -56,7 +60,8 @@ import { QRCodeModule } from 'angular2-qrcode';
       // or after 30 seconds (whichever comes first).
       registrationStrategy: 'registerWhenStable:30000'
     }),
-    QRCodeModule
+    QRCodeModule,
+    NgQrScannerModule
   ],
   providers: [LoginService],
   bootstrap: [AppComponent],

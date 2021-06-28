@@ -5,9 +5,13 @@
         <div class="pt-4 px-3 justify-items-center">
             <h1 class="md:text-3xl text-center text-indigo-800 mb-6 font-bold"> Total Amount : {{totalAmount}} </h1>
         </div>
-        <div *ngIf="!noRecords">
+        <!-- <div *ngIf="!noRecords">
             <button class="float-right pt-2 pb-2.5 px-4 bg-green-500 hover:bg-green-800 text-white"
                 (click)="downloadTotalImage()">Save image</button>
+        </div> -->
+        <div>
+            <button class="float-right pt-2 pb-2.5 px-4 bg-green-500 hover:bg-green-800 text-white"
+            (click)="shareQrCode()">QR Code</button>
         </div>
     </div>
 
@@ -43,11 +47,11 @@
             <strong class="text-red-500">No Record!</strong>
         </div>
     </div>
-    <div class="grid m-2 justify-items-center">
+    <div *ngIf="showQrCode" class="grid p-5 justify-items-center">
         <h1 class="md:text-3xl ">QR Code</h1>
         <qr-code [value]="qrValue" size="500"></qr-code>
     </div>
-    <div *ngIf="!noRecords" class="grid grid-flow-col grid-cols-6 grid-rows-15 gap-4 p-2">
+    <div *ngIf="!noRecords && !showQrCode" class="grid grid-flow-col grid-cols-6 grid-rows-15 gap-4 p-2">
         <div *ngFor="let item of recordRows; let i = index;" class="p-5 bg-gray-100"
             id="row{{item.number}}">
             <strong class="text-indigo-900 text-lg">{{item.number}} </strong>

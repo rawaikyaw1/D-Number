@@ -57,7 +57,7 @@ export class OrderService {
 
       data.allNumbers = allNumbers;
 
-      console.log(collection);
+      // console.log(collection);
 
       await this.firestore.collection(collection).add({
         data
