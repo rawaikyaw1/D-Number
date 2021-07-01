@@ -36,6 +36,8 @@ export class AppComponent {
     // console.log(isTablet);  // returns if the device us a tablet (iPad etc)
     // console.log(isDesktopDevice); // returns if the app is running on a Desktop browser.
 
+    // localStorage.setItem('user', 'good');
+
     if (isMobile) {
       localStorage.setItem('device_type', 'Mobile');
     } else if (isTablet) {

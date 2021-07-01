@@ -8,4 +8,8 @@ html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 video{
     display: none;
+    position: absolute;
+    top: 0;
 }
+
+

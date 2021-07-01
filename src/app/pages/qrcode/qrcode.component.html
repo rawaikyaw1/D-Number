@@ -2,64 +2,70 @@
 <div id="capture">
 
     <div class="grid p-2">
-        <div *ngIf="!recordRows.length" class="pt-4 px-3 justify-items-center">
-            <h1 class="md:text-3xl text-center text-indigo-800 mb-6 font-bold"> Scan QR Code  </h1>
+        <div *ngIf="!recordRows.length" class="pt-4 px-3 justify-self-center">
+            <div>
+                <button
+                    class="items-center pt-2 pb-2.5 px-4 bg-indigo-600 hover:bg-indigo-800 rounded md:text-2xl mb-6 font-bold text-white"
+                    (click)="scanQrCode()"> Scan QR Code</button>
+            </div>
         </div>
 
         <div *ngIf="recordRows.length" class="pt-4 px-3 justify-items-center">
             <h1 class="md:text-3xl text-center text-indigo-800 mb-6 font-bold"> Total Amount : {{totalAmount}} </h1>
 
-            <div class="justify-between flex">
-                <table class="table">
-                    <tr>
-                        <td class="p-3">
-                            <strong class="text-2xl">Name :</strong>
-                        </td>
-                        <td class="p-3 text-2xl">{{userName}}</td>
-                        <td class="p-3">
-                            <strong class="text-2xl">Date :</strong>
-                        </td >
-                        <td class="p-3 text-2xl">{{recordDate+time}}</td>
-                    </tr>
-                </table>
+        </div>
 
-                <button class="float-right pt-2 pb-2.5 px-4 bg-green-500 hover:bg-green-800 text-white" (click)="restartScan()">ပြန်ဖတ်မည်။</button>
-                <button class="float-right pt-2 pb-2.5 px-4 bg-green-500 hover:bg-green-800 text-white" (click)="saveAllData()">လက်ခံမည်။</button>
+        <div *ngIf="recordRows.length" class="grid md:grid-cols-3 p-2 gap-4">
+            <div class="">
+                <strong>Name : </strong>{{scanUser}}
+            </div>
+            <div>
+                <strong>Date : </strong>{{recordDate+time}}
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <button class="float-right pt-2 pb-2.5 px-4 bg-yellow-600 hover:bg-yellow-800 text-white"
+                    (click)="scanQrCode()">ပြန်ဖတ်မည်။</button>
+                <button class="float-right pt-2 pb-2.5 px-4 bg-green-600 hover:bg-green-800 text-white"
+                    (click)="saveAllData()">လက်ခံမည်။</button>
             </div>
         </div>
 
         <div *ngIf="successSaved" class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl">
             <div class="md:flex">
-              
-              <div class="p-8 justify-items-center items-center">
-                <span  class="block text-center mt-1 text-lg leading-tight font-medium text-black hover:underline">သိမ်းပြီးပါပြီ။</span>
-                <p class="m-4 text-gray-500 text-center">
-                    နောက်ထပ် QR ကုတ်အား Scan ဖတ်ရန် အောက်ပါ ခလုပ်ကိုနှိပ်ပါ။
-                </p>
-                <button (click)="restartScan()" class="float-right pt-2 pb-2.5 px-4 bg-green-500 hover:bg-indigo-800 text-white">QR Scan ဖတ်မည်။</button>
-              </div>
-            </div>
-          </div>
 
-        <div *ngIf="!recordRows.length" class="flex justify-center">
-            <qr-scanner
-                [debug]="false"
-                [canvasWidth]="340" 
-                [canvasHeight]="340" 
-                [stopAfterScan]="true" 
-                [updateTime]="500"> 
+                <div class="p-8 justify-items-center items-center">
+                    <span
+                        class="block text-center mt-1 text-lg leading-tight font-medium text-black hover:underline">သိမ်းပြီးပါပြီ။</span>
+                    <p class="m-4 text-gray-500 text-center">
+                        နောက်ထပ် QR ကုတ်အား Scan ဖတ်ရန် အောက်ပါ ခလုပ်ကိုနှိပ်ပါ။
+                    </p>
+                    <button (click)="scanQrCode()"
+                        class="float-right pt-2 pb-2.5 px-4 bg-green-500 hover:bg-indigo-800 text-white">QR Scan
+                        ဖတ်မည်။</button>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="deviceType == 'desktop'" class="flex justify-center " [ngClass]="!recordRows.length ? '' : 'hidden'" id="desktopDiv">
+            <qr-scanner [debug]="false" [canvasWidth]="480" [canvasHeight]="360" [stopAfterScan]="true"
+                [updateTime]="500">
             </qr-scanner>
         </div>
 
-        <div *ngIf="recordRows" class="grid grid-flow-col grid-cols-6 grid-rows-15 gap-4 p-2">
-            <div *ngFor="let item of recordRows; let i = index;" class="p-5 bg-gray-100"
-                id="row{{item.number}}">
+        <div *ngIf="deviceType != 'desktop'" class="flex justify-center" [ngClass]="!recordRows.length ? '' : 'hidden'" id="mobileDiv">
+            <qr-scanner [debug]="false" [canvasWidth]="340" [canvasHeight]="460" [stopAfterScan]="true"
+                [updateTime]="500">
+            </qr-scanner>
+        </div>
+
+        <div *ngIf="recordRows.length" class="grid grid-flow-col grid-cols-6 grid-rows-15 gap-4 p-2">
+            <div *ngFor="let item of recordRows; let i = index;" class="p-5 bg-gray-100" id="row{{item.number}}">
                 <strong class="text-indigo-900 text-lg">{{item.number}} </strong>
                 <span class="pl-5"> {{item.price}}</span>
             </div>
         </div>
-        
+
     </div>
 
-    
+
 </div>

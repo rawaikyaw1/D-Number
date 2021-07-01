@@ -116,7 +116,7 @@
                 <tbody>
 
                     <tr *ngFor="let item of detailRows.roles; let i = index;" class="hover:bg-indigo-100 border"
-                        id="row-{{item.uuid}}">
+                        id="row-{{item.uuid}}" [ngClass]="winNumber(item.number, item.uuid) == 'true' ? 'bg-green-600' : ''">
                         <td>
                             {{item.originNumber}}
                         </td>

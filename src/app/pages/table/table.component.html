@@ -28,7 +28,7 @@
             <input type="date" class="p-2 text-indigo-700 border-b-2 border-indigo-500 outline-none"
                 [(ngModel)]="recordDate">
 
-            <button (click)="searchRecord()" class=" pt-2 pb-2.5 px-4 bg-indigo-500 hover:bg-indigo-800 text-white">
+            <button  (click)="searchRecord()" class=" pt-2 pb-2.5 px-4 bg-indigo-500 hover:bg-indigo-800 text-white">
                 Search
             </button>
         </div>
@@ -47,7 +47,7 @@
             <strong class="text-red-500">No Record!</strong>
         </div>
     </div>
-    <div *ngIf="showQrCode" class="grid p-5 justify-items-center">
+    <div *ngIf="showQrCode" class="grid p-5 justify-items-center disabled">
         <h1 class="md:text-3xl ">QR Code</h1>
         <qr-code [value]="qrValue" size="500"></qr-code>
     </div>

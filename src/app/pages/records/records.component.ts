@@ -34,15 +34,10 @@ export class RecordsComponent implements OnInit {
 
     this.searchRecord(this.recordDate+this.time);
 
-    
-
-
   }
 
-
-
   showDetails(index) {
-    // console.log(this.recordRows[index]);
+    
     this.detailRows = this.recordRows[index];
     this.showModalBox = true;
   }
@@ -87,5 +82,20 @@ export class RecordsComponent implements OnInit {
     }
 
   }
+
+  async winNumber(numbers, uuid){
+    if(typeof this.search_number != 'undefined' && this.search_number != ''){
+      console.log(this.search_number);
+    if (numbers.search(this.search_number) == -1) {
+      
+      return 'false';
+    } else {
+      
+      document.getElementById('row-' + uuid).className = 'bg-green-400';
+
+      return 'true';
+    }
+  }
+}
 
 }

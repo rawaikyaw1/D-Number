@@ -2,6 +2,10 @@
     grid-template-rows: repeat(17, minmax(0, 1fr));
 }
 
+#desktopDiv, #mobileDiv{
+    position: relative;
+}
+
 @media only screen and (min-width: 320px ) and (max-width: 419px) {
     .grid-rows-15 {
         grid-template-rows: repeat(50, minmax(0, 1fr)) !important;

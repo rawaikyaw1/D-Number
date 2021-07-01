@@ -15,18 +15,19 @@ export class QrcodeComponent implements OnInit {
 
   screenHeight: number;
   screenWidth: number;
-  userName;
-  recordRows:any;
-  totalAmount:number;
-  allNumber:string;
-  recordDate:any;
-  time:any;
+  scanUser;
+  recordRows: any;
+  totalAmount: number;
+  allNumber: string;
+  recordDate: any;
+  time: any;
   am: boolean;
   pm: boolean;
-  roles:any;
+  roles: any;
   successSaved;
+  deviceType;
 
-  @ViewChild(QrScannerComponent, {static : false}) qrScannerComponent: QrScannerComponent;
+  @ViewChild(QrScannerComponent, { static: false }) qrScannerComponent: QrScannerComponent;
 
   // @HostListener('window:resize', ['$event'])
   //   getScreenSize(event?) {
@@ -35,15 +36,16 @@ export class QrcodeComponent implements OnInit {
   //         console.log(this.screenHeight, this.screenWidth);
   //   }
 
-  constructor(public orderService: OrderService, public router: Router) { 
+  constructor(public orderService: OrderService, public router: Router) {
     // this.getScreenSize();
   }
 
   ngOnInit(): void {
 
     var toDay = Date.now();
-    this.userName = ''; this.recordRows = []; this.totalAmount = 0;
+    this.scanUser = ''; this.recordRows = []; this.totalAmount = 0;
     this.allNumber = ''; this.roles = []; this.successSaved = false;
+    this.deviceType = 0;
 
     if (formatDate(toDay, 'a', 'en-US') == 'AM') {
       this.time = 'AM';
@@ -59,11 +61,17 @@ export class QrcodeComponent implements OnInit {
       this.pm = true;
     }
 
+    this.deviceType = JSON.parse(localStorage.getItem('deviceInfo')).deviceType;
+    // console.log(this.deviceType);
   }
 
-  ngAfterViewInit(): void{
+  // ngAfterViewInit(): void{
 
-    this.qrScannerComponent.getMediaDevices().then(devices => {
+  async scanQrCode() {
+
+    await this.resetData();
+    
+    await this.qrScannerComponent.getMediaDevices().then(devices => {
       // console.log(devices);
       const videoDevices: MediaDeviceInfo[] = [];
       for (const device of devices) {
@@ -71,67 +79,67 @@ export class QrcodeComponent implements OnInit {
           videoDevices.push(device);
         }
       }
-      if (videoDevices.length > 0) {
-        let choosenDev;
-        for (const dev of videoDevices) {
-          if (dev.label.includes('front')) {
-            choosenDev = dev;
-            break;
-          }
-        }
-        if (choosenDev) {
-          this.qrScannerComponent.chooseCamera.next(choosenDev);
+
+        // console.log(choosenDev);
+        if (videoDevices.length > 1) {
+          // this.qrScannerComponent.chooseCamera.next(choosenDev);
+          this.qrScannerComponent.chooseCamera.next(videoDevices[1]);
+          
         } else {
           this.qrScannerComponent.chooseCamera.next(videoDevices[0]);
+                  
+
         }
-      }
+   
     });
 
+    
     this.qrScannerComponent.capturedQr.subscribe(result => {
       this.groupAsJsonData(result);
     });
 
   }
 
-  groupAsJsonData(data){
+  groupAsJsonData(data) {
     var arr = data.split(',');
     var groupArr = [];
     var number;
     var roles = [];
+    this.totalAmount = 0;
 
-      arr.forEach((element, index) => {
-        // console.log(element, index);
-        if(index < 10){
-           number = '0'+index;
-        }else{
-          number = ''+index;
-        }
+    arr.forEach((element, index) => {
+      // console.log(element, index);
+      if (index < 10) {
+        number = '0' + index;
+      } else {
+        number = '' + index;
+      }
 
-        if(Number(element) > 0){
-          groupArr.push({'number':number, 'price':Number(element)});
+      if (Number(element) > 0) {
+        groupArr.push({ 'number': number, 'price': Number(element) });
 
-          this.totalAmount += Number(element);
-          this.allNumber += number+',';
+        this.totalAmount += Number(element);
+        this.allNumber += number + ',';
 
-          roles.push({
-            'amount':Number(element),
-            'number': number,
-            'operator' : 'atae',
-            'price' : element,
-            'uuid' : this.getUniqueId(4),
-          });
-          
-        }
+        roles.push({
+          'amount': Number(element),
+          'number': number,
+          'operator': 'atae',
+          'price': element,
+          'uuid': this.getUniqueId(4),
+        });
 
-      });
+      }
 
-      this.recordRows = groupArr;
-      this.userName = arr[100];
-      
-       this.roles = roles;
-      // console.log(groupData);
+    });
 
-      // console.log(arr[100]);
+    
+
+    this.recordRows = groupArr;
+    this.scanUser = arr[100];
+
+    this.roles = roles;
+    
 
   }
 
@@ -145,11 +153,11 @@ export class QrcodeComponent implements OnInit {
     return stringArr.join('-');
   }
 
-  async saveAllData(){
+  async saveAllData() {
     let data = {
       'roles': this.roles,
       'total': this.totalAmount,
-      'name': this.userName,
+      'name': this.scanUser,
       'date': this.recordDate
     };
 
@@ -162,20 +170,21 @@ export class QrcodeComponent implements OnInit {
 
     await this.orderService.saveOrder(data, time);
 
-    this.resetData();
+    this.resetData('all');
+    
   }
 
-  resetData(){
-    this.successSaved = true;
+  resetData(all = null) {
+    if(all){
+      this.successSaved = true;
+    }
     this.recordRows = [];
-    this.userName = '';
+    this.scanUser = '';
     this.totalAmount = 0;
     this.roles = [];
+
   }
 
-  restartScan(){
-    // this.router.navigate(['qrcode']);
-    window.location.reload();
-  }
+
 
 }

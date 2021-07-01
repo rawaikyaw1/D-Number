@@ -1132,9 +1132,9 @@ export class HomeComponent implements OnInit {
       // this.totalAmount = this.totalAmount - Number(this.tableRow[objIndex]['amount']) + Number(updateData['amount']);
       // this.tableRow[objIndex] = await updateData;
 
-      // this.clearFunction('all');
+      this.clearFunction('all');
 
-      // this.localStorageSave();
+      this.localStorageSave();
 
     }
 
@@ -1192,7 +1192,7 @@ export class HomeComponent implements OnInit {
       'date': this.date
     };
 
-console.log(data);
+// console.log(data);
     let time = {
       'am': this.am,
       'pm': this.pm
