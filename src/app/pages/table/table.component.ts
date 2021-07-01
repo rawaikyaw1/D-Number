@@ -98,7 +98,7 @@ export class TableComponent implements OnInit {
 
       });
 
-      this.totalAmount += Number(data.total);
+      // this.totalAmount += Number(data.total);
 
     });
 
@@ -119,9 +119,11 @@ export class TableComponent implements OnInit {
       }else{
         objectArr.push({'number': number, 'price': totalArr[number]});
         qrString += totalArr[number]+',';
+        this.totalAmount += totalArr[number];
       }
       
     }
+    
     
     qrString+=this.user.email;
     this.recordRows = objectArr;
