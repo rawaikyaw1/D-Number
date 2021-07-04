@@ -138,7 +138,9 @@ export class HomeComponent implements OnInit {
 
     this.operator = operator;
 
-    
+    if(this.number[this.number.length-2] == ','){
+      this.number = this.number.slice(0, -2); 
+    }
 
   }
 

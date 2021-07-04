@@ -28,9 +28,9 @@ export class AppComponent {
   async epicFunction() {
 
     this.deviceInfo = this.deviceService.getDeviceInfo();
-    const isMobile = this.deviceService.isMobile();
-    const isTablet = this.deviceService.isTablet();
-    const isDesktopDevice = this.deviceService.isDesktop();
+    // const isMobile = this.deviceService.isMobile();
+    // const isTablet = this.deviceService.isTablet();
+    // const isDesktopDevice = this.deviceService.isDesktop();
     // console.log(this.deviceInfo);
     // console.log(isMobile);  // returns if the device is a mobile device (android / iPhone / windows-phone etc)
     // console.log(isTablet);  // returns if the device us a tablet (iPad etc)
@@ -38,19 +38,19 @@ export class AppComponent {
 
     // localStorage.setItem('user', 'good');
 
-    if (isMobile) {
-      localStorage.setItem('device_type', 'Mobile');
-    } else if (isTablet) {
-      localStorage.setItem('device_type', 'Tablet');
-    } else if (isDesktopDevice) {
-      localStorage.setItem('deviceType', 'Computer Browser');
-    }
+    // if (isMobile) {
+    //   localStorage.setItem('device_type', 'Mobile');
+    // } else if (isTablet) {
+    //   localStorage.setItem('device_type', 'Tablet');
+    // } else if (isDesktopDevice) {
+    //   localStorage.setItem('deviceType', 'Computer Browser');
+    // }
 
     await localStorage.setItem('deviceInfo', JSON.stringify(this.deviceInfo));
 
 
   }
 
-  
+
 
 }

@@ -18,6 +18,17 @@ export class OrderService {
 
   async saveOrder(data, time) {
 
+    var ifConnected = window.navigator.onLine;
+
+    if(!ifConnected){
+
+      this.loader.requestEnded();
+        toastr.error('Please connect to internet!', 'Connnection lose!');
+        return false;
+
+
+    }
+
     this.loader.requestStart();
 
     console.log(data.roles.length, data, data.roles);

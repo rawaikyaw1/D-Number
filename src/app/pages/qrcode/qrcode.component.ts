@@ -70,7 +70,7 @@ export class QrcodeComponent implements OnInit {
   async scanQrCode() {
 
     await this.resetData();
-    
+    var deveice_type;
     await this.qrScannerComponent.getMediaDevices().then(devices => {
       // console.log(devices);
       const videoDevices: MediaDeviceInfo[] = [];
@@ -84,16 +84,13 @@ export class QrcodeComponent implements OnInit {
         if (videoDevices.length > 1) {
           // this.qrScannerComponent.chooseCamera.next(choosenDev);
           this.qrScannerComponent.chooseCamera.next(videoDevices[1]);
-          
         } else {
           this.qrScannerComponent.chooseCamera.next(videoDevices[0]);
-                  
 
         }
    
     });
 
-    
     this.qrScannerComponent.capturedQr.subscribe(result => {
       this.groupAsJsonData(result);
     });
