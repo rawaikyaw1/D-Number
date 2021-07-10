@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
+import { Router } from '@angular/router';
 import { LoaderService } from 'src/app/services/loader/loader.service';
 import { LoginService } from './login.service';
 
@@ -8,13 +9,17 @@ declare var require: any;
 var toastr = require('toastr');
 
 
+
 @Injectable({
   providedIn: 'root'
 })
 
 export class OrderService {
 
-  constructor(private firestore: AngularFirestore, private loader:LoaderService, private loginService:LoginService) { }
+  constructor(private firestore: AngularFirestore, private loader:LoaderService, private loginService:LoginService, private router: Router) { }
+
+  user = JSON.parse(localStorage.getItem('user'));
+
 
   async saveOrder(data, time) {
 
@@ -31,7 +36,7 @@ export class OrderService {
 
     this.loader.requestStart();
 
-    console.log(data.roles.length, data, data.roles);
+    // console.log(data.roles.length, data, data.roles);
     if (data.roles.length) {
 
       await this.checkTokenMatch(data, time);
@@ -49,6 +54,8 @@ export class OrderService {
   async combineData(data, time){
     var allNumbers = '';
     var dataObjs = [];
+
+    
     
      await data.roles.forEach(async value => {
       let numberArr = await value.number.replace(/\s/g, "").split(',');
@@ -70,7 +77,7 @@ export class OrderService {
 
       // console.log(collection);
 
-      await this.firestore.collection(collection).add({
+      await this.firestore.collection(this.user.email+collection).add({
         data
       })
       .then((response)=>{
@@ -97,7 +104,7 @@ export class OrderService {
     this.loader.requestStart();
     var objects = [];
     
-    await this.firestore.collection(date).ref.get()
+    await this.firestore.collection(this.user.email+date).ref.get()
     .then((snap)=>{
       snap.forEach(element => {
         // console.log(typeof element.data()['data']);
@@ -135,6 +142,8 @@ export class OrderService {
   
             toastr.error('Session expired!', 'Invalid!');
             this.loader.requestEnded();
+            this.router.navigate(['login']);
+
             
           }else{
   
