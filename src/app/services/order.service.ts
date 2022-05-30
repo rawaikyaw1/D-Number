@@ -86,7 +86,7 @@ export class OrderService {
         toastr.success('Successfully saved!', 'Success!');
       })
       .catch(e => {
-        console.log(e);
+        // console.log(e);
         this.loader.requestEnded();
         toastr.error(e, 'Error!');
       });
@@ -114,7 +114,7 @@ export class OrderService {
 
     })
     .catch(e => {
-      console.log(e);
+      // console.log(e);
       this.loader.requestEnded();
       toastr.error(e, 'Error!');
     });
@@ -147,7 +147,7 @@ export class OrderService {
             
           }else{
   
-            console.log('match');
+            // console.log('match');
             this.combineData(data, time);
             this.loader.requestEnded();
   
@@ -166,7 +166,7 @@ export class OrderService {
 
     })
     .catch(e => {
-      console.log(e);
+      // console.log(e);
       this.loader.requestEnded();
       toastr.error(e, 'Error!');
     });

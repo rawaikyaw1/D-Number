@@ -263,7 +263,7 @@ export class HomeComponent implements OnInit {
 
     }
 
-    console.log(insertData); 
+    // console.log(insertData); 
 
     if(this.multiPrice){
       if (insertData) {

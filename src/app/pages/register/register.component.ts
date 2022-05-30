@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { LoginService } from 'src/app/services/login.service';
+import { Router } from '@angular/router';
 
 declare var require:any;
 var toastr = require('toastr');
@@ -12,13 +13,18 @@ var toastr = require('toastr');
 export class RegisterComponent implements OnInit {
   
   
-  constructor(public loginService: LoginService) { }
+  constructor(public loginService: LoginService, public router: Router) { }
 
   registerForm;
   
   ngOnInit(): void {
     if(localStorage.getItem('user') !== null){
-      console.log('user is logged in', localStorage.getItem('user'));
+      
+      const userData = JSON.parse(localStorage.getItem('user'));
+
+      if(userData.email != "rawaikyaw@gmail.com"){
+        this.router.navigate(['dashboard']);
+      }
     }
     
     
